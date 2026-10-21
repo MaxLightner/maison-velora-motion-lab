@@ -4,17 +4,18 @@
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const lerp = (a, b, t) => a + (b - a) * t;
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  // The experience starts animated on every browser; visitors may opt out explicitly.
+  const isFirefox = /firefox\//i.test(navigator.userAgent);
   const body = document.body;
   let lowPower = Boolean(
+    isFirefox ||
     (navigator.deviceMemory && navigator.deviceMemory <= 4) ||
     (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) ||
     navigator.connection?.saveData ||
     window.matchMedia('(pointer: coarse)').matches
   );
   body.classList.toggle('perf-lite', lowPower);
-  let motionOff = prefersReduced.matches;
-  let explicitMotionChoice = false;
+  let motionOff = false;
   let viewH = innerHeight;
   let scrollY = window.scrollY;
   let targetMouseX = innerWidth / 2, targetMouseY = innerHeight / 2;
@@ -23,10 +24,6 @@
   let needsScrollUpdate = true;
   let pointerDirty = false;
   let frameScheduled = false;
-  let interactionBurstUntil = 0;
-  let previousFrameTime = 0;
-  let sampledFrames = 0;
-  let slowFrames = 0;
   function scheduleFrame() {
     if (frameScheduled || document.hidden) return;
     frameScheduled = true;
@@ -39,12 +36,12 @@
   const revealSite = () => {
     if (loaded) return;
     loaded = true;
-    setTimeout(() => { loader.classList.add('loaded'); }, motionOff ? 30 : 650);
-    setTimeout(() => { loader.remove(); }, motionOff ? 500 : 2100);
+    setTimeout(() => { loader.classList.add('loaded'); }, 80);
+    setTimeout(() => { loader.remove(); }, 780);
   };
   if (document.readyState === 'complete') revealSite();
   else window.addEventListener('load', revealSite, { once: true });
-  setTimeout(revealSite, 3400);
+  setTimeout(revealSite, 2400);
 
   // Intersection reveals: minimal layout work, replay-free.
   const observer = 'IntersectionObserver' in window
@@ -88,29 +85,22 @@
 
   // Toggle off decorative animations without removing functionality.
   const motionToggle = $('#motionToggle');
-  const motionNotice = $('#motionNotice');
   function syncMotion() {
     body.classList.toggle('motion-off', motionOff);
-    document.documentElement.classList.toggle('force-motion', explicitMotionChoice && !motionOff);
     motionToggle.setAttribute('aria-pressed', String(motionOff));
-    motionToggle.setAttribute('aria-label', motionOff ? 'Resume motion effects' : 'Pause motion effects');
-    motionToggle.lastElementChild.textContent = motionOff ? 'MOTION OFF' : 'MOTION ON';
-    motionNotice.hidden = !motionOff;
+    motionToggle.setAttribute('aria-label', motionOff ? 'Enable animation' : 'Reduce animation');
+    motionToggle.lastElementChild.textContent = motionOff ? 'ENABLE MOTION' : 'REDUCE MOTION';
     needsScrollUpdate = true;
     scheduleFrame();
   }
-  motionToggle.addEventListener('click', () => { explicitMotionChoice = true; motionOff = !motionOff; syncMotion(); });
-  motionNotice.addEventListener('click', () => { explicitMotionChoice = true; motionOff = false; syncMotion(); });
-  prefersReduced.addEventListener?.('change', e => { if (!explicitMotionChoice) { motionOff = e.matches; syncMotion(); } });
+  motionToggle.addEventListener('click', () => { motionOff = !motionOff; syncMotion(); });
   syncMotion();
 
-  const hero = $('#hero'), heroImage = $('#heroImage'), glow = $('#heroGlow');
+  const hero = $('#hero'), heroImage = $('#heroImage');
   const heroScene = $('#heroScene'), heroContent = $('.hero-content'), heroTransition = $('#heroTransition');
-  const maison = $('#maison'), maisonVisual = $('.maison-visual');
   const ritualSection = $('#ritual'), ritualStage = $('#ritualStage'), ritualBottle = $('#ritualBottle');
   const notes = $$('.ritual-note'), steps = $$('.ritual-steps span');
   const beauty = $('#beauty'), beautyImage = $('#beautyImage');
-  const statement = $('#statement'), statementTitle = $('.statement-title');
   let activeNote = -1;
   function updateScroll() {
     scrollY = window.scrollY;
@@ -123,10 +113,7 @@
     if (sceneRect.bottom > 0 && sceneRect.top < viewH) {
       const p = clamp(-sceneRect.top / Math.max(sceneRect.height - viewH, 1), 0, 1);
       hero.style.setProperty('--scene-progress', p.toFixed(4));
-      hero.style.setProperty('--hero-frame-y', (p * 7.5).toFixed(2) + '%');
-      hero.style.setProperty('--hero-frame-x', (p * 6.2).toFixed(2) + '%');
-      hero.style.setProperty('--hero-frame-radius', (p * 36).toFixed(1) + 'px');
-      heroImage.style.transform = 'scale(' + (1.10 + p * .49).toFixed(3) + ') translate3d(var(--hero-mx,0px), ' + (p * -54).toFixed(1) + 'px, 0)';
+      heroImage.style.transform = 'translate3d(0,' + (p * -25).toFixed(1) + 'px,0) scale(' + (1.08 + p * .13).toFixed(3) + ')';
       heroContent.style.opacity = String(1 - clamp(p * 2.65, 0, 1));
       heroContent.style.transform = 'translate3d(0,calc(-43% - ' + (p * 125).toFixed(1) + 'px),0)';
       const emergence = clamp((p - .31) / .38, 0, 1);
@@ -134,20 +121,14 @@
       heroTransition.style.opacity = String(emergence * departure);
       heroTransition.style.transform = 'translate3d(-50%,calc(-50% + ' + (1 - emergence) * 100 + 'px),0) scale(' + (.72 + emergence * .36).toFixed(3) + ')';
     }
-    const maisonRect = maison.getBoundingClientRect();
-    if (maisonRect.top < viewH && maisonRect.bottom > 0) {
-      const p = clamp((viewH - maisonRect.top) / (viewH + maisonRect.height), 0, 1);
-      maisonVisual.style.setProperty('--maison-shift', ((.5 - p) * 115).toFixed(1) + 'px');
-      maisonVisual.style.setProperty('--maison-scale', (1.06 - p * .06).toFixed(3));
-    }
     const ritualRect = ritualSection.getBoundingClientRect();
     const distance = Math.max(1, ritualRect.height - viewH);
     if (ritualRect.top <= viewH && ritualRect.bottom >= 0) {
       const p = clamp(-ritualRect.top / distance, 0, 1);
       ritualStage.style.setProperty('--ritual-progress', p.toFixed(3));
-      ritualBottle.style.setProperty('--ritual-y', (Math.sin(p * Math.PI * 2) * -70).toFixed(1) + 'px');
-      ritualBottle.style.setProperty('--ritual-r', ((p - .5) * 24).toFixed(2) + 'deg');
-      ritualBottle.style.setProperty('--ritual-scale', (.85 + Math.sin(p * Math.PI) * .42).toFixed(3));
+      ritualBottle.style.setProperty('--ritual-y', (Math.sin(p * Math.PI * 2) * -32).toFixed(1) + 'px');
+      ritualBottle.style.setProperty('--ritual-r', ((p - .5) * 12).toFixed(2) + 'deg');
+      ritualBottle.style.setProperty('--ritual-scale', (.93 + Math.sin(p * Math.PI) * .16).toFixed(3));
       const note = Math.min(2, Math.floor(p * 3));
       if (note !== activeNote) {
         activeNote = note;
@@ -159,23 +140,68 @@
     const beautyRect = beauty.getBoundingClientRect();
     if (beautyRect.bottom > 0 && beautyRect.top < viewH) {
       const progress = clamp((viewH - beautyRect.top) / (viewH + beautyRect.height), 0, 1);
-      beautyImage.style.setProperty('--beauty-parallax', ((progress - .5) * 165).toFixed(1) + 'px');
-      const opening = clamp((progress - .05) * 2.7, 0, 1);
-      beauty.style.setProperty('--beauty-open', opening.toFixed(3));
-      beauty.style.setProperty('--beauty-mask', ((1 - opening) * 42).toFixed(1) + '%');
-    }
-    const statementRect = statement.getBoundingClientRect();
-    if (statementRect.top < viewH && statementRect.bottom > 0) {
-      const p = clamp((viewH - statementRect.top) / (viewH + statementRect.height), 0, 1);
-      statement.style.setProperty('--statement-progress', p.toFixed(3));
-      statementTitle.style.setProperty('--statement-shift', ((p - .5) * -52).toFixed(1) + 'px');
+      beautyImage.style.setProperty('--beauty-parallax', ((progress - .5) * 45).toFixed(1) + 'px');
     }
   }
   window.addEventListener('scroll', () => {
     needsScrollUpdate = true;
-    interactionBurstUntil = performance.now() + 700;
     scheduleFrame();
   }, { passive: true });
+  // Discrete mouse-wheel notches get a short, fast easing tail. Trackpads and
+  // touch retain native scrolling, which is already continuous on those devices.
+  let wheelTarget = window.scrollY;
+  let wheelAnimating = false;
+  function easeWheel() {
+    if (!wheelAnimating) return;
+    const current = window.scrollY;
+    const difference = wheelTarget - current;
+    if (Math.abs(difference) <= .8) {
+      wheelAnimating = false;
+      if (Math.abs(difference) > .01) window.scrollTo(0, wheelTarget);
+      return;
+    }
+    window.scrollTo(0, current + difference * .29);
+    needsScrollUpdate = true;
+  }
+  window.addEventListener('wheel', event => {
+    if (event.defaultPrevented || !event.cancelable || event.ctrlKey || event.metaKey ||
+        event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY) ||
+        body.classList.contains('dialog-open') || body.classList.contains('menu-open') ||
+        window.matchMedia('(pointer: coarse)').matches) return;
+    // Pixel-precise trackpads should keep their native gesture and momentum.
+    if (event.deltaMode === 0 && Math.abs(event.deltaY) < 42) return;
+    const unit = event.deltaMode === 1 ? 22 : event.deltaMode === 2 ? viewH : 1;
+    const delta = clamp(event.deltaY * unit * 1.65, -630, 630);
+    const max = Math.max(0, document.documentElement.scrollHeight - viewH);
+    if (!wheelAnimating) wheelTarget = window.scrollY;
+    wheelTarget = clamp(wheelTarget + delta, 0, max);
+    event.preventDefault();
+    wheelAnimating = true;
+    scheduleFrame();
+  }, { passive: false });
+  document.addEventListener('click', event => {
+    const link = event.target.closest?.('a[href^="#"]');
+    if (!link) return;
+    const destination = document.getElementById(link.getAttribute('href').slice(1));
+    if (!destination) return;
+    event.preventDefault();
+    const max = Math.max(0, document.documentElement.scrollHeight - viewH);
+    wheelTarget = clamp(destination.getBoundingClientRect().top + window.scrollY - (destination.id === 'top' ? 0 : 60), 0, max);
+    wheelAnimating = true;
+    history.pushState(null, '', link.getAttribute('href'));
+    scheduleFrame();
+  });
+  window.addEventListener('pointerdown', event => {
+    if (event.target.closest('a,button,[role="button"]')) return;
+    wheelAnimating = false;
+    wheelTarget = window.scrollY;
+  }, { passive: true });
+  window.addEventListener('keydown', event => {
+    if (['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key)) {
+      wheelAnimating = false;
+      wheelTarget = window.scrollY;
+    }
+  });
   window.addEventListener('resize', () => { viewH = innerHeight; needsScrollUpdate = true; updateTrack(); scheduleFrame(); }, { passive: true });
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) { needsScrollUpdate = true; scheduleFrame(); }
@@ -195,6 +221,7 @@
   let hoveredMagnet = null;
   document.addEventListener('pointermove', event => {
     if (event.pointerType !== 'mouse') return;
+    if (motionOff || lowPower) return;
     pointerSeen = true;
     targetMouseX = event.clientX; targetMouseY = event.clientY;
     pointerDirty = true;
@@ -202,7 +229,7 @@
   }, { passive: true });
   $$('.magnetic').forEach(el => {
     el.addEventListener('pointerenter', e => {
-      if (e.pointerType !== 'mouse') return;
+      if (e.pointerType !== 'mouse' || lowPower) return;
       if (hoveredMagnet && hoveredMagnet !== el) hoveredMagnet.style.transform = '';
       hoveredMagnet = el;
       cursorHalo.classList.add('is-link');
@@ -219,7 +246,7 @@
   });
   const frame = $('[data-tilt]');
   frame.addEventListener('pointermove', e => {
-    if (motionOff || e.pointerType !== 'mouse') return;
+    if (motionOff || lowPower || e.pointerType !== 'mouse') return;
     const r = frame.getBoundingClientRect();
     frame.style.transform = 'perspective(1000px) rotateY(' + ((e.clientX - r.left) / r.width - .5) * 5 + 'deg) rotateX(' + (.5 - (e.clientY - r.top) / r.height) * 5 + 'deg)';
   });
@@ -230,7 +257,7 @@
   moteField.className = 'ritual-motes';
   moteField.setAttribute('aria-hidden', 'true');
   $('.ritual-backdrop').appendChild(moteField);
-  for (let i = 0; i < (lowPower ? 0 : 16); i++) {
+  for (let i = 0; i < 0; i++) {
     const mote = document.createElement('i');
     const seed = (i * 73 + 19) % 97;
     mote.style.setProperty('--mote-x', (seed + 2) + '%');
@@ -334,53 +361,26 @@
   });
   beautyReveal.setAttribute('aria-expanded', 'false');
 
-  function frameLoop(time) {
+  function frameLoop() {
     frameScheduled = false;
-    if (!motionOff && !lowPower && time < interactionBurstUntil) {
-      if (previousFrameTime && time - previousFrameTime < 150) {
-        sampledFrames++;
-        if (time - previousFrameTime > 35) slowFrames++;
-        if (sampledFrames >= 40) {
-          if (slowFrames / sampledFrames > .3) {
-            lowPower = true;
-            body.classList.add('perf-lite');
-          }
-          sampledFrames = 0;
-          slowFrames = 0;
-        }
-      }
-      previousFrameTime = time;
-    } else {
-      previousFrameTime = 0;
-    }
+    easeWheel();
     if (needsScrollUpdate) { needsScrollUpdate = false; updateScroll(); }
-    if (!motionOff && pointerDirty && pointerSeen) {
+    // Native cursors on Firefox/low-end devices avoid a permanent animation loop.
+    if (!motionOff && !lowPower && pointerDirty && pointerSeen) {
       pointerDirty = false;
-      const heroRect = hero.getBoundingClientRect();
-      if (heroRect.bottom > 0 && heroRect.top < viewH) {
-        const x = targetMouseX / innerWidth, y = targetMouseY / viewH;
-        hero.style.setProperty('--hero-mx', ((x - .5) * -42).toFixed(1) + 'px');
-        hero.style.setProperty('--hero-my', ((y - .5) * -26).toFixed(1) + 'px');
-        if (!lowPower) {
-          const size = Math.min(760, innerWidth * .85);
-          glow.style.transform = 'translate3d(' + (targetMouseX - heroRect.left - size / 2).toFixed(1) + 'px,' + (targetMouseY - heroRect.top - size / 2).toFixed(1) + 'px,0)';
-        }
-      }
       if (hoveredMagnet) {
         const rect = hoveredMagnet.getBoundingClientRect();
-        const dx = targetMouseX - (rect.left + rect.width / 2);
-        const dy = targetMouseY - (rect.top + rect.height / 2);
-        hoveredMagnet.style.transform = 'translate3d(' + (dx * .17).toFixed(1) + 'px,' + (dy * .17).toFixed(1) + 'px,0)';
+        hoveredMagnet.style.transform = 'translate3d(' + ((targetMouseX - rect.left - rect.width / 2) * .12).toFixed(1) + 'px,' + ((targetMouseY - rect.top - rect.height / 2) * .12).toFixed(1) + 'px,0)';
       }
     }
-    if (!motionOff && pointerSeen) {
-      mouseX = lerp(mouseX, targetMouseX, .17);
-      mouseY = lerp(mouseY, targetMouseY, .17);
+    if (!motionOff && !lowPower && pointerSeen) {
+      mouseX = lerp(mouseX, targetMouseX, .2);
+      mouseY = lerp(mouseY, targetMouseY, .2);
       cursorDot.style.transform = 'translate3d(' + targetMouseX + 'px,' + targetMouseY + 'px,0)';
       cursorHalo.style.transform = 'translate3d(' + mouseX + 'px,' + mouseY + 'px,0)';
-      if (Math.abs(mouseX - targetMouseX) + Math.abs(mouseY - targetMouseY) > .7) scheduleFrame();
+      if (Math.abs(mouseX - targetMouseX) + Math.abs(mouseY - targetMouseY) > 1.2) scheduleFrame();
     }
-    if (!motionOff && time < interactionBurstUntil) scheduleFrame();
+    if (wheelAnimating) scheduleFrame();
   }
   scheduleFrame();
 })();
