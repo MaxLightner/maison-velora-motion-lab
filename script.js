@@ -5,6 +5,7 @@
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const lerp = (a, b, t) => a + (b - a) * t;
   const easeQuint = t => t < .5 ? 16 * t ** 5 : 1 - (-2 * t + 2) ** 5 / 2;
+  const easeCubic = t => t * t * (3 - 2 * t);
   // The experience starts animated on every browser; visitors may opt out explicitly.
   const isFirefox = /firefox\//i.test(navigator.userAgent);
   const body = document.body;
@@ -59,19 +60,23 @@
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
+          if (entry.target.classList.contains('beauty-image-panel')) entry.target.classList.add('is-revealed');
           entry.target.querySelector('.image-reveal')?.classList.add('visible');
           observer.unobserve(entry.target);
         }
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' })
     : null;
-  $$('.reveal, .image-reveal').forEach(el => {
-    // Clip-path completely hides a frame from IntersectionObserver,
-    // so observe its visible parent before revealing the frame.
+  $('.reveal, .image-reveal').forEach(el => {
     const observed = el.classList.contains('image-reveal') ? el.parentElement : el;
     if (observer) observer.observe(observed);
     else el.classList.add('visible');
   });
+  // The beauty portrait uses an inexpensive transform-based curtain reveal.
+  // Observing its panel ensures this reveal works even in Firefox's lite mode.
+  const beautyPanel = $('.beauty-image-panel');
+  if (observer) observer.observe(beautyPanel);
+  else beautyPanel.classList.add('is-revealed');
 
   // Header and accessible navigation menu.
   const header = $('#siteHeader'), menuToggle = $('#menuToggle'), menu = $('#mobileMenu');
@@ -135,8 +140,9 @@
       const titleExit = easeQuint(clamp((p - .07) / .43, 0, 1));
       heroContent.style.opacity = String(1 - titleExit);
       heroContent.style.transform = 'translate3d(0,calc(-43% - ' + (titleExit * 125).toFixed(1) + 'px),0)';
-      const emergence = easeQuint(clamp((p - .27) / .39, 0, 1));
-      const departure = 1 - easeQuint(clamp((p - .78) / .19, 0, 1));
+      const emergence = easeCubic(clamp((p - .13) / .43, 0, 1));
+      // A long fade across the final third of the scene avoids the old blink-out.
+      const departure = 1 - easeCubic(clamp((p - .69) / .31, 0, 1));
       heroTransition.style.opacity = String(emergence * departure);
       heroTransition.style.transform = 'translate3d(-50%,calc(-50% + ' + ((1 - emergence) * 100).toFixed(1) + 'px),0) scale(' + (.72 + emergence * .36).toFixed(3) + ')';
     }
@@ -169,7 +175,7 @@
     needsScrollUpdate = true;
     scheduleFrame();
   }, { passive: true });
-  // Discrete mouse-wheel notches get a short, fast easing tail. Trackpads and
+  // Discrete mouse-wheel notches travel at a restrained, predictable speed. Trackpads and
   // touch retain native scrolling, which is already continuous on those devices.
   let wheelTarget = window.scrollY;
   let wheelPosition = window.scrollY;
@@ -206,8 +212,8 @@
         window.matchMedia('(pointer: coarse)').matches) return;
     // Pixel-precise trackpads should keep their native gesture and momentum.
     if (event.deltaMode === 0 && Math.abs(event.deltaY) < 42) return;
-    const unit = event.deltaMode === 1 ? 22 : event.deltaMode === 2 ? viewH : 1;
-    const delta = clamp(event.deltaY * unit * 1.85, -640, 640);
+    const unit = event.deltaMode === 1 ? 18 : event.deltaMode === 2 ? viewH : 1;
+    const delta = clamp(event.deltaY * unit * 1.0, -190, 190);
     const max = Math.max(0, document.documentElement.scrollHeight - viewH);
     if (!wheelAnimating) { wheelPosition = window.scrollY; wheelTarget = wheelPosition; wheelVelocity = 0; lastWheelFrame = 0; }
     wheelTarget = clamp(wheelTarget + delta, 0, max);
