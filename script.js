@@ -109,8 +109,8 @@
   const hero = $('#hero'), heroImage = $('#heroImage');
   const heroScene = $('#heroScene'), heroContent = $('.hero-content'), heroTransition = $('#heroTransition');
   const ritualSection = $('#ritual'), ritualStage = $('#ritualStage'), ritualBottle = $('#ritualBottle');
-  const notes = $('.ritual-note'), steps = $('.ritual-steps span');
-  const ritualProducts = $('.ritual-product', ritualBottle);
+  const notes = $$('.ritual-note'), steps = $$('.ritual-steps span');
+  const ritualProducts = $$('.ritual-product', ritualBottle);
   const beauty = $('#beauty'), beautyImage = $('#beautyImage');
   const beautyCurtainLeft = $('.beauty-curtain--left'), beautyCurtainRight = $('.beauty-curtain--right');
   let activeNote = -1;
