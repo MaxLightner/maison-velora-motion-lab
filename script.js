@@ -60,7 +60,6 @@
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
-          if (entry.target.classList.contains('beauty-image-panel')) entry.target.classList.add('is-revealed');
           entry.target.querySelector('.image-reveal')?.classList.add('visible');
           observer.unobserve(entry.target);
         }
@@ -72,11 +71,6 @@
     if (observer) observer.observe(observed);
     else el.classList.add('visible');
   });
-  // The beauty portrait uses an inexpensive transform-based curtain reveal.
-  // Observing its panel ensures this reveal works even in Firefox's lite mode.
-  const beautyPanel = $('.beauty-image-panel');
-  if (observer) observer.observe(beautyPanel);
-  else beautyPanel.classList.add('is-revealed');
 
   // Header and accessible navigation menu.
   const header = $('#siteHeader'), menuToggle = $('#menuToggle'), menu = $('#mobileMenu');
@@ -115,8 +109,10 @@
   const hero = $('#hero'), heroImage = $('#heroImage');
   const heroScene = $('#heroScene'), heroContent = $('.hero-content'), heroTransition = $('#heroTransition');
   const ritualSection = $('#ritual'), ritualStage = $('#ritualStage'), ritualBottle = $('#ritualBottle');
-  const notes = $$('.ritual-note'), steps = $$('.ritual-steps span');
+  const notes = $('.ritual-note'), steps = $('.ritual-steps span');
+  const ritualProducts = $('.ritual-product', ritualBottle);
   const beauty = $('#beauty'), beautyImage = $('#beautyImage');
+  const beautyCurtainLeft = $('.beauty-curtain--left'), beautyCurtainRight = $('.beauty-curtain--right');
   let activeNote = -1;
   measureScenes();
   window.addEventListener('load', () => { measureScenes(); lastPaintedScroll = Number.NaN; needsScrollUpdate = true; scheduleFrame(); }, { once: true });
@@ -153,22 +149,26 @@
       const p = clamp((scrollY - ritualBounds.top) / distance, 0, 1);
       const phase = easeQuint(p);
       ritualStage.style.setProperty('--ritual-progress', phase.toFixed(3));
-      ritualBottle.style.setProperty('--ritual-y', (Math.sin(phase * Math.PI * 2) * -32).toFixed(1) + 'px');
-      ritualBottle.style.setProperty('--ritual-r', ((phase - .5) * 12).toFixed(2) + 'deg');
-      ritualBottle.style.setProperty('--ritual-scale', (.93 + Math.sin(phase * Math.PI) * .16).toFixed(3));
       const note = Math.min(2, Math.floor(p * 3));
       if (note !== activeNote) {
         activeNote = note;
         notes.forEach((el, i) => el.classList.toggle('is-active', i === note));
         steps.forEach((el, i) => el.classList.toggle('is-active', i === note));
-        ritualStage.style.backgroundColor = ['#170e10', '#2b1a20', '#24120f'][note];
+        ritualProducts.forEach((el, i) => el.classList.toggle('is-active', i === note));
+        ritualStage.style.backgroundColor = ['#170e10', '#29201a', '#1d101e'][note];
       }
     }
     const beautyBounds = sceneMetrics.beauty;
-    if (beautyBounds && scrollY < beautyBounds.top + beautyBounds.height &&
-        scrollY + viewH > beautyBounds.top) {
-      const p = clamp((viewH + scrollY - beautyBounds.top) / (viewH + beautyBounds.height), 0, 1);
-      beautyImage.style.setProperty('--beauty-parallax', ((easeQuint(p) - .5) * 45).toFixed(1) + 'px');
+    if (beautyBounds) {
+      // A scroll-linked two-panel mask: revealed in view, reverses when scrolling back.
+      // Only compositor transforms change, avoiding Firefox clip-path repaints.
+      const reveal = easeCubic(clamp((scrollY + viewH * .94 - beautyBounds.top) / (viewH * .72), 0, 1));
+      beautyCurtainLeft.style.transform = 'translate3d(' + (-101 * reveal).toFixed(2) + '%,0,0)';
+      beautyCurtainRight.style.transform = 'translate3d(' + (101 * reveal).toFixed(2) + '%,0,0)';
+      if (scrollY < beautyBounds.top + beautyBounds.height && scrollY + viewH > beautyBounds.top) {
+        const p = clamp((viewH + scrollY - beautyBounds.top) / (viewH + beautyBounds.height), 0, 1);
+        beautyImage.style.setProperty('--beauty-parallax', ((easeQuint(p) - .5) * 25).toFixed(1) + 'px');
+      }
     }
   }
   window.addEventListener('scroll', () => {
@@ -365,9 +365,9 @@
   updateTrack();
 
   const products = [
-    { title: 'Éclipse', desc: 'Smoked amber. Velvet iris. The warmth of a moment that refuses to fade.', notes: ['BERGAMOT', 'VELVET IRIS', 'AMBER NOIR'] },
-    { title: 'Solenne', desc: 'A quiet radiance of white flowers, soft suede, and skin-warm musk.', notes: ['NEROLI', 'WHITE FLOWERS', 'CASHMERE MUSK'] },
-    { title: 'Vesper', desc: 'A darker kind of elegance. Black rose in an embrace of oud and saffron.', notes: ['SAFFRON', 'BLACK ROSE', 'OUD'] }
+    { image: 'eclipse.webp', title: 'Éclipse', desc: 'Smoked amber. Velvet iris. The warmth of a moment that refuses to fade.', notes: ['BERGAMOT', 'VELVET IRIS', 'AMBER NOIR'] },
+    { image: 'solenne.webp', title: 'Solenne', desc: 'A quiet radiance of white flowers, soft suede, and skin-warm musk.', notes: ['NEROLI', 'WHITE FLOWERS', 'CASHMERE MUSK'] },
+    { image: 'vesper.webp', title: 'Vesper', desc: 'A darker kind of elegance. Black rose in an embrace of oud and saffron.', notes: ['SAFFRON', 'BLACK ROSE', 'OUD'] }
   ];
   const dialog = $('#productDialog'), dialogTitle = $('#modalTitle'), dialogDescription = $('#modalDescription'), modalNotes = $('#modalNotes');
   let lastCard = null;
@@ -377,6 +377,9 @@
     if (!product) return;
     lastCard = card;
     dialogTitle.textContent = product.title;
+    const modalProductImage = $('#modalProductImage');
+    modalProductImage.src = './assets/' + product.image;
+    modalProductImage.alt = product.title + ' fragrance bottle with branded label';
     dialogDescription.textContent = product.desc;
     modalNotes.replaceChildren(...product.notes.map(note => {
       const chip = document.createElement('span');

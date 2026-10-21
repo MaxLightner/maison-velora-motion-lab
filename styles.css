@@ -202,3 +202,24 @@ body.motion-off .reveal{opacity:1;transform:none}
 .beauty-image-panel.is-revealed img{transform:translate3d(0,var(--beauty-parallax,0px),0) scale(1.025)}
 body.motion-off .beauty-image-panel::before{display:none}
 @media(prefers-reduced-motion:reduce){.beauty-image-panel::before{transition:none;transform:translate3d(102%,0,0)}.beauty-image-panel img{transition:none}}
+
+/* v7 — Three labelled visual identities, lightweight composited transitions. */
+.ritual-bottle{transform:none!important;filter:none!important;mix-blend-mode:normal;mask-image:none!important;overflow:hidden;background:#1b1414}
+.ritual-bottle::after{display:none!important}
+.ritual-bottle .ritual-product{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;object-position:center;opacity:0;transform:translate3d(0,15px,0) scale(1.015);transition:opacity .8s cubic-bezier(.2,.65,.2,1),transform .95s cubic-bezier(.2,.7,.2,1);pointer-events:none;filter:none!important;backface-visibility:hidden}
+.ritual-bottle .ritual-product.is-active{opacity:1;transform:translate3d(0,0,0) scale(1)}
+.product-image-1{background:#140e0e}
+.product-image-2{background:#897a69}
+.product-image-3{background:#140d15}
+.product-image img{object-fit:contain!important;filter:none!important}
+.dialog-visual{background:#1a1212}
+.dialog-visual img{object-fit:contain!important}
+.beauty-image-panel::before{display:none!important}
+.beauty-image-panel .beauty-curtain{position:absolute;top:0;bottom:0;width:50.05%;z-index:4;pointer-events:none;background:#160f0e;transform:translate3d(0,0,0);backface-visibility:hidden}
+.beauty-curtain--left{left:0}
+.beauty-curtain--right{right:0}
+.beauty-image-panel img,.beauty-image-panel.is-revealed img{transition:none;transform:translate3d(0,var(--beauty-parallax,0px),0) scale(1.035)}
+.beauty-image-label{z-index:5}
+body.motion-off .beauty-curtain{display:none}
+@media(prefers-reduced-motion:reduce){.beauty-image-panel .beauty-curtain{display:none}.ritual-bottle .ritual-product{transition:none;transform:none}}
+@media(max-width:760px){.ritual-bottle{background:#1b1414}.ritual-bottle .ritual-product{object-fit:contain}}
