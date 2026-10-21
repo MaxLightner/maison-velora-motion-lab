@@ -4,6 +4,7 @@
   const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
   const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
   const lerp = (a, b, t) => a + (b - a) * t;
+  const easeQuint = t => t < .5 ? 16 * t ** 5 : 1 - (-2 * t + 2) ** 5 / 2;
   // The experience starts animated on every browser; visitors may opt out explicitly.
   const isFirefox = /firefox\//i.test(navigator.userAgent);
   const body = document.body;
@@ -18,6 +19,15 @@
   let motionOff = false;
   let viewH = innerHeight;
   let scrollY = window.scrollY;
+  let lastPaintedScroll = Number.NaN;
+  const sceneMetrics = { hero: null, ritual: null, beauty: null };
+  function measureScenes() {
+    const y = window.scrollY;
+    const measure = el => { const r = el.getBoundingClientRect(); return { top: r.top + y, height: r.height }; };
+    sceneMetrics.hero = measure(heroScene);
+    sceneMetrics.ritual = measure(ritualSection);
+    sceneMetrics.beauty = measure(beauty);
+  }
   let targetMouseX = innerWidth / 2, targetMouseY = innerHeight / 2;
   let mouseX = targetMouseX, mouseY = targetMouseY;
   let pointerSeen = false;
@@ -91,6 +101,7 @@
     motionToggle.setAttribute('aria-label', motionOff ? 'Enable animation' : 'Reduce animation');
     motionToggle.lastElementChild.textContent = motionOff ? 'ENABLE MOTION' : 'REDUCE MOTION';
     needsScrollUpdate = true;
+    lastPaintedScroll = Number.NaN;
     scheduleFrame();
   }
   motionToggle.addEventListener('click', () => { motionOff = !motionOff; syncMotion(); });
@@ -102,33 +113,43 @@
   const notes = $$('.ritual-note'), steps = $$('.ritual-steps span');
   const beauty = $('#beauty'), beautyImage = $('#beautyImage');
   let activeNote = -1;
+  measureScenes();
+  window.addEventListener('load', () => { measureScenes(); lastPaintedScroll = Number.NaN; needsScrollUpdate = true; scheduleFrame(); }, { once: true });
+  document.fonts?.ready?.then(() => { measureScenes(); lastPaintedScroll = Number.NaN; needsScrollUpdate = true; scheduleFrame(); });
   function updateScroll() {
-    scrollY = window.scrollY;
+    const nextScroll = window.scrollY;
+    if (Math.abs(nextScroll - lastPaintedScroll) < .15) return;
+    lastPaintedScroll = scrollY = nextScroll;
     const maxScroll = Math.max(1, document.documentElement.scrollHeight - viewH);
     $('#pageProgress').style.transform = 'scaleX(' + (scrollY / maxScroll).toFixed(5) + ')';
     header.classList.toggle('scrolled', scrollY > 30);
     if (motionOff) return;
 
-    const sceneRect = heroScene.getBoundingClientRect();
-    if (sceneRect.bottom > 0 && sceneRect.top < viewH) {
-      const p = clamp(-sceneRect.top / Math.max(sceneRect.height - viewH, 1), 0, 1);
-      hero.style.setProperty('--scene-progress', p.toFixed(4));
-      heroImage.style.transform = 'translate3d(0,' + (p * -25).toFixed(1) + 'px,0) scale(' + (1.08 + p * .13).toFixed(3) + ')';
-      heroContent.style.opacity = String(1 - clamp(p * 2.65, 0, 1));
-      heroContent.style.transform = 'translate3d(0,calc(-43% - ' + (p * 125).toFixed(1) + 'px),0)';
-      const emergence = clamp((p - .31) / .38, 0, 1);
-      const departure = 1 - clamp((p - .84) / .16, 0, 1);
+    const heroBounds = sceneMetrics.hero;
+    if (heroBounds && scrollY < heroBounds.top + heroBounds.height &&
+        scrollY + viewH > heroBounds.top) {
+      const p = clamp((scrollY - heroBounds.top) / Math.max(heroBounds.height - viewH, 1), 0, 1);
+      const phase = easeQuint(p);
+      hero.style.setProperty('--scene-progress', phase.toFixed(4));
+      heroImage.style.transform = 'translate3d(0,' + (phase * -25).toFixed(1) + 'px,0) scale(' + (1.08 + phase * .13).toFixed(3) + ')';
+      const titleExit = easeQuint(clamp((p - .07) / .43, 0, 1));
+      heroContent.style.opacity = String(1 - titleExit);
+      heroContent.style.transform = 'translate3d(0,calc(-43% - ' + (titleExit * 125).toFixed(1) + 'px),0)';
+      const emergence = easeQuint(clamp((p - .27) / .39, 0, 1));
+      const departure = 1 - easeQuint(clamp((p - .78) / .19, 0, 1));
       heroTransition.style.opacity = String(emergence * departure);
-      heroTransition.style.transform = 'translate3d(-50%,calc(-50% + ' + (1 - emergence) * 100 + 'px),0) scale(' + (.72 + emergence * .36).toFixed(3) + ')';
+      heroTransition.style.transform = 'translate3d(-50%,calc(-50% + ' + ((1 - emergence) * 100).toFixed(1) + 'px),0) scale(' + (.72 + emergence * .36).toFixed(3) + ')';
     }
-    const ritualRect = ritualSection.getBoundingClientRect();
-    const distance = Math.max(1, ritualRect.height - viewH);
-    if (ritualRect.top <= viewH && ritualRect.bottom >= 0) {
-      const p = clamp(-ritualRect.top / distance, 0, 1);
-      ritualStage.style.setProperty('--ritual-progress', p.toFixed(3));
-      ritualBottle.style.setProperty('--ritual-y', (Math.sin(p * Math.PI * 2) * -32).toFixed(1) + 'px');
-      ritualBottle.style.setProperty('--ritual-r', ((p - .5) * 12).toFixed(2) + 'deg');
-      ritualBottle.style.setProperty('--ritual-scale', (.93 + Math.sin(p * Math.PI) * .16).toFixed(3));
+    const ritualBounds = sceneMetrics.ritual;
+    if (ritualBounds && scrollY <= ritualBounds.top + ritualBounds.height &&
+        scrollY + viewH >= ritualBounds.top) {
+      const distance = Math.max(1, ritualBounds.height - viewH);
+      const p = clamp((scrollY - ritualBounds.top) / distance, 0, 1);
+      const phase = easeQuint(p);
+      ritualStage.style.setProperty('--ritual-progress', phase.toFixed(3));
+      ritualBottle.style.setProperty('--ritual-y', (Math.sin(phase * Math.PI * 2) * -32).toFixed(1) + 'px');
+      ritualBottle.style.setProperty('--ritual-r', ((phase - .5) * 12).toFixed(2) + 'deg');
+      ritualBottle.style.setProperty('--ritual-scale', (.93 + Math.sin(phase * Math.PI) * .16).toFixed(3));
       const note = Math.min(2, Math.floor(p * 3));
       if (note !== activeNote) {
         activeNote = note;
@@ -137,10 +158,11 @@
         ritualStage.style.backgroundColor = ['#170e10', '#2b1a20', '#24120f'][note];
       }
     }
-    const beautyRect = beauty.getBoundingClientRect();
-    if (beautyRect.bottom > 0 && beautyRect.top < viewH) {
-      const progress = clamp((viewH - beautyRect.top) / (viewH + beautyRect.height), 0, 1);
-      beautyImage.style.setProperty('--beauty-parallax', ((progress - .5) * 45).toFixed(1) + 'px');
+    const beautyBounds = sceneMetrics.beauty;
+    if (beautyBounds && scrollY < beautyBounds.top + beautyBounds.height &&
+        scrollY + viewH > beautyBounds.top) {
+      const p = clamp((viewH + scrollY - beautyBounds.top) / (viewH + beautyBounds.height), 0, 1);
+      beautyImage.style.setProperty('--beauty-parallax', ((easeQuint(p) - .5) * 45).toFixed(1) + 'px');
     }
   }
   window.addEventListener('scroll', () => {
@@ -150,17 +172,31 @@
   // Discrete mouse-wheel notches get a short, fast easing tail. Trackpads and
   // touch retain native scrolling, which is already continuous on those devices.
   let wheelTarget = window.scrollY;
+  let wheelPosition = window.scrollY;
+  let wheelVelocity = 0;
+  let lastWheelFrame = 0;
   let wheelAnimating = false;
-  function easeWheel() {
+  // Critically damped motion: a true ease-in AND ease-out with velocity
+  // continuity across consecutive mouse-wheel notches and direction changes.
+  function easeWheel(time) {
     if (!wheelAnimating) return;
-    const current = window.scrollY;
-    const difference = wheelTarget - current;
-    if (Math.abs(difference) <= .8) {
+    const dt = lastWheelFrame ? clamp((time - lastWheelFrame) / 1000, .008, .034) : 1 / 60;
+    lastWheelFrame = time;
+    const omega = 18;
+    const error = wheelPosition - wheelTarget;
+    const coefficient = wheelVelocity + omega * error;
+    const attenuation = Math.exp(-omega * dt);
+    wheelPosition = wheelTarget + (error + coefficient * dt) * attenuation;
+    wheelVelocity = (wheelVelocity - omega * coefficient * dt) * attenuation;
+    const max = Math.max(0, document.documentElement.scrollHeight - viewH);
+    wheelPosition = clamp(wheelPosition, 0, max);
+    if (Math.abs(wheelTarget - wheelPosition) < .55 && Math.abs(wheelVelocity) < 7) {
+      wheelPosition = wheelTarget;
+      wheelVelocity = 0;
       wheelAnimating = false;
-      if (Math.abs(difference) > .01) window.scrollTo(0, wheelTarget);
-      return;
+      lastWheelFrame = 0;
     }
-    window.scrollTo(0, current + difference * .29);
+    window.scrollTo(0, wheelPosition);
     needsScrollUpdate = true;
   }
   window.addEventListener('wheel', event => {
@@ -171,9 +207,9 @@
     // Pixel-precise trackpads should keep their native gesture and momentum.
     if (event.deltaMode === 0 && Math.abs(event.deltaY) < 42) return;
     const unit = event.deltaMode === 1 ? 22 : event.deltaMode === 2 ? viewH : 1;
-    const delta = clamp(event.deltaY * unit * 1.65, -630, 630);
+    const delta = clamp(event.deltaY * unit * 1.85, -640, 640);
     const max = Math.max(0, document.documentElement.scrollHeight - viewH);
-    if (!wheelAnimating) wheelTarget = window.scrollY;
+    if (!wheelAnimating) { wheelPosition = window.scrollY; wheelTarget = wheelPosition; wheelVelocity = 0; lastWheelFrame = 0; }
     wheelTarget = clamp(wheelTarget + delta, 0, max);
     event.preventDefault();
     wheelAnimating = true;
@@ -186,6 +222,9 @@
     if (!destination) return;
     event.preventDefault();
     const max = Math.max(0, document.documentElement.scrollHeight - viewH);
+    wheelPosition = window.scrollY;
+    wheelVelocity = 0;
+    lastWheelFrame = 0;
     wheelTarget = clamp(destination.getBoundingClientRect().top + window.scrollY - (destination.id === 'top' ? 0 : 60), 0, max);
     wheelAnimating = true;
     history.pushState(null, '', link.getAttribute('href'));
@@ -194,15 +233,19 @@
   window.addEventListener('pointerdown', event => {
     if (event.target.closest('a,button,[role="button"]')) return;
     wheelAnimating = false;
-    wheelTarget = window.scrollY;
+    wheelPosition = wheelTarget = window.scrollY;
+    wheelVelocity = 0;
+    lastWheelFrame = 0;
   }, { passive: true });
   window.addEventListener('keydown', event => {
     if (['ArrowUp','ArrowDown','PageUp','PageDown','Home','End',' '].includes(event.key)) {
       wheelAnimating = false;
-      wheelTarget = window.scrollY;
+      wheelPosition = wheelTarget = window.scrollY;
+      wheelVelocity = 0;
+      lastWheelFrame = 0;
     }
   });
-  window.addEventListener('resize', () => { viewH = innerHeight; needsScrollUpdate = true; updateTrack(); scheduleFrame(); }, { passive: true });
+  window.addEventListener('resize', () => { viewH = innerHeight; measureScenes(); lastPaintedScroll = Number.NaN; needsScrollUpdate = true; updateTrack(); scheduleFrame(); }, { passive: true });
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) { needsScrollUpdate = true; scheduleFrame(); }
   });
@@ -361,9 +404,9 @@
   });
   beautyReveal.setAttribute('aria-expanded', 'false');
 
-  function frameLoop() {
+  function frameLoop(time) {
     frameScheduled = false;
-    easeWheel();
+    easeWheel(time);
     if (needsScrollUpdate) { needsScrollUpdate = false; updateScroll(); }
     // Native cursors on Firefox/low-end devices avoid a permanent animation loop.
     if (!motionOff && !lowPower && pointerDirty && pointerSeen) {
