@@ -124,10 +124,8 @@
     const maxScroll = Math.max(1, document.documentElement.scrollHeight - viewH);
     $('#pageProgress').style.transform = 'scaleX(' + (scrollY / maxScroll).toFixed(5) + ')';
     header.classList.toggle('scrolled', scrollY > 30);
-    if (motionOff) return;
-
     const heroBounds = sceneMetrics.hero;
-    if (heroBounds && scrollY < heroBounds.top + heroBounds.height &&
+    if (!motionOff && heroBounds && scrollY < heroBounds.top + heroBounds.height &&
         scrollY + viewH > heroBounds.top) {
       const p = clamp((scrollY - heroBounds.top) / Math.max(heroBounds.height - viewH, 1), 0, 1);
       const phase = easeQuint(p);
@@ -154,20 +152,25 @@
         activeNote = note;
         notes.forEach((el, i) => el.classList.toggle('is-active', i === note));
         steps.forEach((el, i) => el.classList.toggle('is-active', i === note));
-        ritualProducts.forEach((el, i) => el.classList.toggle('is-active', i === note));
+        ritualProducts.forEach((el, i) => {
+          el.classList.toggle('is-active', i === note);
+          el.classList.toggle('is-before', i < note);
+        });
         ritualStage.style.backgroundColor = ['#170e10', '#29201a', '#1d101e'][note];
       }
     }
     const beautyBounds = sceneMetrics.beauty;
-    if (beautyBounds) {
-      // A scroll-linked two-panel mask: revealed in view, reverses when scrolling back.
-      // Only compositor transforms change, avoiding Firefox clip-path repaints.
-      const reveal = easeCubic(clamp((scrollY + viewH * .94 - beautyBounds.top) / (viewH * .72), 0, 1));
+    if (!motionOff && beautyBounds) {
+      // The shutters BEGIN as the portrait enters view and are still visibly
+      // opening at the panel midpoint. Reverses naturally on upward scroll.
+      const rawReveal = clamp((scrollY + viewH * .58 - beautyBounds.top) / (viewH * .76), 0, 1);
+      const reveal = easeCubic(rawReveal);
       beautyCurtainLeft.style.transform = 'translate3d(' + (-101 * reveal).toFixed(2) + '%,0,0)';
       beautyCurtainRight.style.transform = 'translate3d(' + (101 * reveal).toFixed(2) + '%,0,0)';
       if (scrollY < beautyBounds.top + beautyBounds.height && scrollY + viewH > beautyBounds.top) {
         const p = clamp((viewH + scrollY - beautyBounds.top) / (viewH + beautyBounds.height), 0, 1);
-        beautyImage.style.setProperty('--beauty-parallax', ((easeQuint(p) - .5) * 25).toFixed(1) + 'px');
+        const parallax = (easeCubic(p) - .5) * 18;
+        beautyImage.style.transform = 'translate3d(0,' + parallax.toFixed(1) + 'px,0) scale(' + (1.115 - reveal * .082).toFixed(4) + ')';
       }
     }
   }
