@@ -221,19 +221,20 @@ body.motion-off .reveal{opacity:1;transform:none}
   pointer-events:none;
   opacity:0;
   transform:translate3d(0,42px,0) scale(.925);
-  transition:opacity .88s cubic-bezier(.17,.65,.18,1),transform 1.05s cubic-bezier(.18,.82,.18,1);
+  transition:opacity .38s cubic-bezier(.34,0,.64,1),transform .94s cubic-bezier(.18,.82,.18,1);
   backface-visibility:hidden;
 }
 .ritual-bottle .ritual-product.is-active{
   opacity:1;
   transform:translate3d(0,0,0) scale(1);
+  transition-delay:.27s,0s;
 }
 .ritual-bottle .ritual-product.is-before{
   opacity:0;
   transform:translate3d(0,-34px,0) scale(1.055);
 }
-.ritual-note{transition:opacity .8s cubic-bezier(.19,.72,.2,1),transform .9s cubic-bezier(.2,.8,.18,1)}
-.ritual-note.is-active{transform:translate3d(0,0,0)}
+.ritual-note{transition:opacity .4s cubic-bezier(.34,0,.64,1),transform .85s cubic-bezier(.2,.8,.18,1)}
+.ritual-note.is-active{transform:translate3d(0,0,0);transition-delay:.2s,0s}
 .product-image-1{background:#140e0e}
 .product-image-2{background:#897a69}
 .product-image-3{background:#140d15}

@@ -163,7 +163,7 @@
     if (!motionOff && beautyBounds) {
       // The shutters BEGIN as the portrait enters view and are still visibly
       // opening at the panel midpoint. Reverses naturally on upward scroll.
-      const rawReveal = clamp((scrollY + viewH * .58 - beautyBounds.top) / (viewH * .76), 0, 1);
+      const rawReveal = clamp((scrollY + viewH * .68 - beautyBounds.top) / (viewH * .68), 0, 1);
       const reveal = easeCubic(rawReveal);
       beautyCurtainLeft.style.transform = 'translate3d(' + (-101 * reveal).toFixed(2) + '%,0,0)';
       beautyCurtainRight.style.transform = 'translate3d(' + (101 * reveal).toFixed(2) + '%,0,0)';
