@@ -67,7 +67,7 @@
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' })
     : null;
-  $('.reveal, .image-reveal').forEach(el => {
+  $$('.reveal, .image-reveal').forEach(el => {
     const observed = el.classList.contains('image-reveal') ? el.parentElement : el;
     if (observer) observer.observe(observed);
     else el.classList.add('visible');
