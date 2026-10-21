@@ -186,11 +186,19 @@ body.motion-off .reveal{opacity:1;transform:none}
 }
 
 /* Shorter scroll chapters require fewer wheel turns. */
-.hero-scroll-scene{height:155svh}
+.hero-scroll-scene{height:190svh}
 .ritual-section{height:240vh}
-@media(max-width:760px){.hero-scroll-scene{height:140svh}.ritual-section{height:220svh}}
+@media(max-width:760px){.hero-scroll-scene{height:175svh}.ritual-section{height:220svh}}
 
 /* v5: pronounced acceleration and deceleration of visual reveals. */
 .ritual-note{transition:opacity .5s cubic-bezier(.76,0,.24,1),transform .55s cubic-bezier(.76,0,.24,1)}
 .reveal{transition:opacity .85s cubic-bezier(.76,0,.24,1),transform .88s cubic-bezier(.76,0,.24,1)}
 .hero-transition-word{will-change:auto}
+
+/* v6: portrait entrance restored with composited transforms, no clip-path repaint. */
+.beauty-image-panel::before{content:"";position:absolute;inset:0;z-index:2;background:#160f0e;pointer-events:none;transform:translate3d(0,0,0);transition:transform 1.15s cubic-bezier(.76,0,.24,1)}
+.beauty-image-panel.is-revealed::before{transform:translate3d(102%,0,0)}
+.beauty-image-panel img{transform:translate3d(-5%,var(--beauty-parallax,0px),0) scale(1.07);transition:transform 1.15s cubic-bezier(.22,1,.36,1)}
+.beauty-image-panel.is-revealed img{transform:translate3d(0,var(--beauty-parallax,0px),0) scale(1.025)}
+body.motion-off .beauty-image-panel::before{display:none}
+@media(prefers-reduced-motion:reduce){.beauty-image-panel::before{transition:none;transform:translate3d(102%,0,0)}.beauty-image-panel img{transition:none}}
