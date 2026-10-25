@@ -50,17 +50,10 @@ const phases = [
 
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
-const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
-const motionPreference = "maison-velora-motion";
-let storedMotion = null;
-try { storedMotion = window.localStorage.getItem(motionPreference); } catch { /* Browsers may block storage. */ }
-let motionEnabled = storedMotion === "on" || (storedMotion === null && !reducedMotion.matches);
-document.documentElement.classList.toggle("motion-forced", motionEnabled);
-document.documentElement.classList.toggle("motion-disabled", !motionEnabled);
-if (motionEnabled) {
-  document.documentElement.classList.add("motion-boot");
-  requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.add("motion-ready")));
-}
+// Motion is part of the permanent experience; there is no visitor-facing toggle.
+const motionEnabled = true;
+document.documentElement.classList.add("motion-forced", "motion-boot");
+requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.add("motion-ready")));
 const header = $("#header");
 const progress = $("#scrollProgress");
 const experience = $("#discover");
@@ -282,10 +275,6 @@ function directMotion() {
   }
 }
 
-// Visitors can explicitly override a system-level reduce-motion setting.
-// The control is visible, and the selection is remembered across visits.
-const motionToggle = $("#motionToggle");
-const motionStatus = $("#motionStatus");
 const heroSillage = $("#heroSillage");
 const sillageContext = heroSillage?.getContext("2d", { alpha: true });
 let sillageFrame = 0;
@@ -355,40 +344,6 @@ function stopSillage() {
   sillageContext?.clearRect(0, 0, sillageWidth, sillageHeight);
 }
 
-function setMotionEnabled(enabled, persist = true) {
-  motionEnabled = enabled;
-  if (persist) {
-    storedMotion = enabled ? "on" : "off";
-    try { window.localStorage.setItem(motionPreference, storedMotion); } catch { /* Storage is optional. */ }
-  }
-  document.documentElement.classList.toggle("motion-forced", enabled);
-  document.documentElement.classList.toggle("motion-disabled", !enabled);
-  motionToggle.classList.toggle("is-on", enabled);
-  motionToggle.setAttribute("aria-pressed", String(enabled));
-  motionToggle.setAttribute("aria-label", enabled ? "Turn animations off" : "Turn animations on");
-  motionStatus.textContent = enabled ? "MOTION ON" : "MOTION OFF";
-  if (enabled) {
-    document.documentElement.classList.add("motion-ready");
-    updateMotionTargets();
-    startSillage();
-  } else {
-    stopSillage();
-    if (motion.raf) cancelAnimationFrame(motion.raf);
-    motion.raf = 0;
-    $$(".reveal").forEach(element => element.classList.add("is-visible"));
-  }
-}
-
-motionToggle.addEventListener("click", () => setMotionEnabled(!motionEnabled));
-$("#replayIntro").addEventListener("click", () => {
-  if (!motionEnabled) setMotionEnabled(true);
-  window.scrollTo({ top: 0, behavior: "instant" });
-  document.documentElement.classList.remove("motion-ready");
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    window.setTimeout(() => document.documentElement.classList.add("motion-ready"), 100);
-  }));
-});
-
 hero.addEventListener("pointermove", event => {
   if (!motionEnabled || event.pointerType === "touch") return;
   const rect = hero.getBoundingClientRect();
@@ -420,7 +375,8 @@ experienceProduct.addEventListener("pointerleave", () => {
 
 window.addEventListener("resize", resizeSillage, { passive: true });
 document.addEventListener("visibilitychange", () => document.hidden ? stopSillage() : startSillage());
-setMotionEnabled(motionEnabled, false);
+startSillage();
+updateMotionTargets();
 
 // The product's light subtly follows the pointer. Keyboard and touch use a fixed composition.
 $$(".fragrance-card-button").forEach(card => {
@@ -459,9 +415,4 @@ if ("IntersectionObserver" in window && motionEnabled) {
 } else {
   $$(".reveal").forEach(element => element.classList.add("is-visible"));
 }
-reducedMotion.addEventListener?.("change", event => {
-  if (storedMotion !== null) return;
-  setMotionEnabled(!event.matches, false);
-});
-
 updatePhase(0);
