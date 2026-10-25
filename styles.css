@@ -130,7 +130,7 @@ img{display:block;max-width:100%}
   .scent-dialog{width:100%;max-width:100%;max-height:96svh}.scent-dialog[open]{display:flex;flex-direction:column}.dialog-close{position:sticky;top:10px;align-self:end;margin:10px 10px -54px 0}.dialog-visual{min-height:300px;height:330px;flex:none}.dialog-visual img{max-height:300px;max-width:260px}.dialog-content{padding:36px 7vw 50px}.dialog-content h2{font-size:78px;margin:15px 0}.dialog-description{font-size:25px;margin-bottom:25px}.dialog-fiction{margin-top:30px}
 }
 @media(max-width:380px){.hero h1{font-size:69px}.stage-title{font-size:80px}.scent-option strong{font-size:25px}.hero-intro p{font-size:11px}.collection{padding-left:5vw;padding-right:5vw}}
-@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.reveal{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){html:not(.motion-forced){scroll-behavior:auto}html:not(.motion-forced) *,html:not(.motion-forced) *::before,html:not(.motion-forced) *::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}html:not(.motion-forced) .reveal{opacity:1;transform:none}}
 
 /* CINEMATIC NARRATIVE: the visitor's own scroll drives the camera and mood. */
 .experience{overflow:visible}
@@ -198,9 +198,83 @@ img{display:block;max-width:100%}
   .fragrance-card-button{transform:none!important}
 }
 @media(prefers-reduced-motion:reduce){
-  .hero-sequence{height:auto}.hero-sequence .hero{position:relative;height:100svh}
-  .hero-transition{display:none}.hero-image{transform:none!important;filter:none!important}.hero-content{opacity:1!important;transform:translateY(-41%)!important}
-  .scent-journey{height:auto}.journey-sticky{position:relative;height:auto;display:block;overflow:visible}
-  .journey-sticky .experience-stage{min-height:650px}.journey-instruction{display:none}
-  .editorial-visual img{transform:none!important}
+  html:not(.motion-forced) .hero-sequence{height:auto}html:not(.motion-forced) .hero-sequence .hero{position:relative;height:100svh}
+  html:not(.motion-forced) .hero-transition{display:none}html:not(.motion-forced) .hero-image{transform:none!important;filter:none!important}html:not(.motion-forced) .hero-content{opacity:1!important;transform:translateY(-41%)!important}
+  html:not(.motion-forced) .scent-journey{height:auto}html:not(.motion-forced) .journey-sticky{position:relative;height:auto;display:block;overflow:visible}
+  html:not(.motion-forced) .journey-sticky .experience-stage{min-height:650px}html:not(.motion-forced) .journey-instruction{display:none}
+  html:not(.motion-forced) .editorial-visual img{transform:none!important}
+}
+
+/* V11 / The Motion Lab: motion that is evident at first sight and reacts to input. */
+.motion-console{position:fixed;z-index:80;bottom:22px;right:22px;display:flex;align-items:center;gap:5px;padding:6px;border:1px solid rgba(226,194,151,.35);border-radius:40px;background:rgba(23,17,15,.83);box-shadow:0 10px 36px #0905057a;backdrop-filter:blur(14px)}
+.motion-console button{height:35px;border:0;border-radius:30px;background:transparent;color:#f1dfc8;font:700 10px/1 var(--sans);letter-spacing:.13em;display:flex;align-items:center;justify-content:center;gap:11px;padding:0 13px;transition:background .4s,color .4s}
+.motion-console button:hover,.motion-console button:focus-visible{background:#dfc49f;color:#23180f}
+.motion-toggle{min-width:132px}.motion-bars{display:flex;gap:3px;align-items:center;height:15px}.motion-bars i{display:block;height:5px;width:2px;border-radius:2px;background:currentColor;animation:motion-meter 850ms ease-in-out infinite alternate}.motion-bars i:nth-child(2){height:12px;animation-delay:-.35s}.motion-bars i:nth-child(3){height:8px;animation-delay:-.6s}.motion-bars i:nth-child(4){height:14px;animation-delay:-.15s}
+.motion-toggle:not(.is-on) .motion-bars i{animation:none;height:3px}.replay-intro{border-left:1px solid rgba(226,194,151,.22)!important}
+@keyframes motion-meter{to{height:3px;opacity:.4}}
+
+.hero-sequence{height:230svh}
+.hero-sequence .hero-image{transform:translate3d(var(--hero-pan-x,0px),var(--hero-pan-y,0px),0) scale(var(--hero-scale,1));transform-origin:67% 45%}
+.hero-shade{z-index:1}
+.hero-light-sweeps{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:2;mix-blend-mode:screen}
+.hero-light-sweeps span{position:absolute;top:-70%;height:245%;width:32%;left:-65%;background:linear-gradient(90deg,transparent 0%,rgba(242,167,95,.02) 35%,rgba(253,208,145,.19) 49%,rgba(255,239,211,.03) 59%,transparent 100%);filter:blur(30px);transform:rotate(24deg);animation:light-scan 10s 1s ease-in-out infinite}
+.hero-light-sweeps span:nth-child(2){animation-delay:-5s;opacity:.56;width:21%}
+@keyframes light-scan{0%,18%{transform:translateX(-18vw) rotate(24deg)}64%,100%{transform:translateX(195vw) rotate(24deg)}}
+.hero-sillage{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;opacity:var(--sillage-opacity,.83);mix-blend-mode:screen}
+.hero-rail,.hero-bottomline,.hero-edition{z-index:5}
+.hero-sequence .hero-content{z-index:5;filter:blur(var(--hero-copy-blur,0px));transform:translateY(calc(-41% + var(--hero-copy-shift,0px))) translateX(var(--hero-copy-x,0px))}
+.hero-title-line{display:block;overflow:hidden;padding:0 .1em .08em 0;margin-bottom:-.08em;white-space:nowrap}
+.hero-title-line>*{display:block;font-weight:300;transition:transform 1.7s cubic-bezier(.18,1,.25,1),opacity 1.2s;will-change:transform,opacity}
+.hero-title-line:nth-child(2)>*{transition-delay:.13s}.hero-title-line:nth-child(3)>*{transition-delay:.26s}
+html.motion-boot:not(.motion-ready) .hero-title-line>*{transform:translateY(116%) rotate(2deg);opacity:0}
+html.motion-boot:not(.motion-ready) .hero-eyebrow,html.motion-boot:not(.motion-ready) .hero-intro{opacity:0;transform:translateY(42px)}
+.hero-eyebrow,.hero-intro{transition:opacity 1.2s .45s,transform 1.35s .45s var(--ease)}
+.hero h1{animation:none;margin-top:36px}
+.hero-interaction-hint{position:absolute;right:5vw;top:48%;z-index:7;writing-mode:vertical-rl;font-size:9px;letter-spacing:.23em;color:#e7caa8;display:flex;align-items:center;gap:17px;animation:hint-appear 2s 2.5s both}
+.hero-interaction-hint i{display:block;width:7px;height:7px;background:#edbd84;border-radius:50%;box-shadow:0 0 0 7px #e4b78726,0 0 20px 5px #efb87488;animation:cue-pulse 2.5s ease-in-out infinite}
+@keyframes hint-appear{from{opacity:0;transform:translateX(20px)}to{opacity:.8;transform:none}}
+@keyframes cue-pulse{50%{box-shadow:0 0 0 15px #e4b78708,0 0 32px 8px #efb87470;transform:scale(1.2)}}
+.hero-transition{z-index:8;gap:42px}
+.hero-transition strong{font-size:clamp(94px,15vw,240px)}
+.hero-transition i{box-shadow:0 0 19px 2px #e8bd85c0}
+.hero-sequence .hero-image img{animation:hero-arrive 3.6s var(--ease) both}
+
+.interlude{justify-content:flex-start;padding:0;gap:0}
+.interlude-track{display:flex;width:max-content;animation:velora-ticker 26s linear infinite}
+.interlude-group{flex:0 0 auto;display:flex;align-items:center;gap:66px;padding-right:66px}
+@keyframes velora-ticker{to{transform:translateX(-50%)}}
+
+.experience{transition:background 1.6s}
+.experience-atmosphere{transition:background 1.6s}
+.journey-sticky{isolation:isolate}
+.journey-sticky::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:radial-gradient(ellipse 40% 55% at calc(68% + var(--stage-glow-x,0px)) 51%,rgba(229,166,107,.13),transparent 70%);animation:ambient-tide 8s ease-in-out infinite alternate}
+@keyframes ambient-tide{to{opacity:.18;transform:scale(1.35)}}
+.journey-sticky>*{position:relative;z-index:1}
+.journey-sticky .experience-stage{overflow:visible}
+.experience-product{transform:perspective(1000px) rotateX(var(--bottle-rx,0deg)) rotateY(var(--bottle-ry,0deg));transition:transform .85s var(--ease)}
+.experience-product img{animation:bottle-breathe 5.5s ease-in-out infinite alternate;filter:drop-shadow(0 32px 32px #0007)}
+.experience-product img.is-changing{animation:none;opacity:0;transform:translateY(70px) scale(.8) rotate(-6deg)}
+@keyframes bottle-breathe{from{transform:translateY(13px) rotate(-1.25deg)}to{transform:translateY(-20px) rotate(1.25deg)}}
+.product-halo{animation:halo-turn 38s linear infinite}
+@keyframes halo-turn{to{transform:rotate(360deg)}}
+.product-sparkles{position:absolute;inset:0;pointer-events:none;z-index:2}
+.product-sparkles i{position:absolute;left:var(--x);top:var(--y);width:var(--s,5px);height:var(--s,5px);border-radius:50%;background:#fbdba2;box-shadow:0 0 16px 7px #f7c98150;opacity:0;animation:sparkle-drift var(--d,4.8s) var(--delay,0s) ease-in-out infinite}
+.product-sparkles i:nth-child(1){--x:21%;--y:18%;--s:5px;--delay:-1s;--d:6s}.product-sparkles i:nth-child(2){--x:87%;--y:38%;--s:3px;--delay:-3s;--d:7s}.product-sparkles i:nth-child(3){--x:30%;--y:70%;--s:4px;--delay:-2s;--d:5.5s}.product-sparkles i:nth-child(4){--x:76%;--y:81%;--s:2px;--delay:-4s;--d:6.4s}.product-sparkles i:nth-child(5){--x:60%;--y:12%;--s:3px;--delay:-.5s;--d:7.4s}
+@keyframes sparkle-drift{0%,100%{opacity:0;transform:translateY(32px) scale(.3)}40%{opacity:.95;transform:translateY(0) scale(1)}65%{opacity:.52;transform:translateY(-34px) scale(1.25)}}
+.journey-track span{transition:width .3s linear}
+.scent-option{transition:background .85s,color .85s}
+
+html.motion-disabled .hero-light-sweeps,html.motion-disabled .hero-sillage,html.motion-disabled .hero-interaction-hint,html.motion-disabled .product-sparkles{display:none}
+html.motion-disabled .interlude-track,html.motion-disabled .product-halo,html.motion-disabled .experience-product img,html.motion-disabled .closing-orbit,html.motion-disabled .journey-sticky::before{animation:none}
+html.motion-disabled .hero-title-line>*,html.motion-disabled .hero-content{transition:none}
+html.motion-disabled .hero-sequence{height:auto}html.motion-disabled .hero-sequence .hero{position:relative;height:100svh}
+html.motion-disabled .hero-transition{display:none}html.motion-disabled .scent-journey{height:auto}html.motion-disabled .journey-sticky{position:relative;height:auto;display:block;overflow:visible}
+html.motion-disabled .hero-content{opacity:1!important;filter:none!important;transform:translateY(-41%)!important}
+html.motion-disabled .hero-image{transform:none!important;filter:none!important}
+
+@media(max-width:760px){
+  .hero-sequence{height:162svh}.hero-interaction-hint{display:none}.hero-title-line{white-space:normal}
+  .motion-console{right:9px;bottom:11px;padding:4px}.motion-console button{font-size:9px;height:32px;padding:0 8px}.motion-toggle{min-width:112px}
+  .hero-light-sweeps span{filter:blur(18px)}
+  .journey-sticky::before{display:none}.experience-product img{animation:bottle-breathe 5.5s ease-in-out infinite alternate}
 }

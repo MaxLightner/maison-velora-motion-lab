@@ -15,12 +15,16 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="preload" href="./assets/hero.webp" as="image" fetchpriority="high">
-  <link rel="stylesheet" href="./styles.css?v=10-cinematic">
-  <script defer src="./script.js?v=10-cinematic"></script>
+  <link rel="stylesheet" href="./styles.css?v=11-motion-lab">
+  <script defer src="./script.js?v=11-motion-lab"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
   <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <div class="motion-console" role="group" aria-label="Animation controls">
+    <button type="button" class="motion-toggle is-on" id="motionToggle" aria-pressed="true" aria-label="Turn animations off"><span class="motion-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span id="motionStatus">MOTION ON</span></button>
+    <button type="button" class="replay-intro" id="replayIntro" aria-label="Replay cinematic introduction">↺ <span>REPLAY</span></button>
+  </div>
   <header class="header" id="header">
     <a class="identity" href="#top" aria-label="Maison Velora, back to top">
       <span class="identity-monogram">V<span>.</span></span>
@@ -45,11 +49,13 @@
     <div class="hero-sequence" id="heroSequence">
     <section class="hero" id="top" aria-labelledby="heroTitle">
       <div class="hero-image"><img src="./assets/hero.webp" alt="Woman in black silk, illuminated by warm cinematic light" width="1672" height="941" fetchpriority="high" decoding="async"></div>
+      <div class="hero-light-sweeps" aria-hidden="true"><span></span><span></span></div>
+      <canvas class="hero-sillage" id="heroSillage" aria-hidden="true"></canvas>
       <div class="hero-shade" aria-hidden="true"></div>
       <div class="hero-rail"><span>V / 001</span><span>THE OLFACTORY COLLECTION</span></div>
       <div class="hero-content">
         <p class="eyebrow hero-eyebrow"><span class="eyebrow-line"></span> AN INVISIBLE SIGNATURE</p>
-        <h1 id="heroTitle">The art of<br><em>being</em><br>remembered.</h1>
+        <h1 id="heroTitle"><span class="hero-title-line"><span>The art of</span></span><span class="hero-title-line"><em>being</em></span><span class="hero-title-line"><span>remembered.</span></span></h1>
         <div class="hero-intro">
           <p>Some impressions never leave.<br>Discover the scent that feels like you.</p>
           <a class="circle-link" href="#discover" aria-label="Explore the fragrance collection"><span>EXPLORE<br>THE MAISON</span><span class="circle-arrow" aria-hidden="true">↗</span></a>
@@ -57,11 +63,12 @@
       </div>
       <div class="hero-bottomline"><span>SCROLL TO ENTER</span><span class="vertical-stroke"></span><span>01 / 05</span></div>
       <span class="hero-edition">MAISON VELORA / OLFACTORY STORIES</span>
+      <div class="hero-interaction-hint" aria-hidden="true"><i></i><span>MOVE TO FEEL THE LIGHT</span></div>
       <div class="hero-transition" aria-hidden="true"><span>THE INVISIBLE LEAVES A TRACE.</span><strong>What <em>remains.</em></strong><i></i></div>
     </section>
     </div>
 
-    <div class="interlude" aria-hidden="true"><span>NOT SEEN. FELT.</span><span class="interlude-star">✳</span><span>NOT SEEN. FELT.</span><span class="interlude-star">✳</span><span>NOT SEEN. FELT.</span><span class="interlude-star">✳</span></div>
+    <div class="interlude" aria-hidden="true"><div class="interlude-track"><div class="interlude-group"><span>NOT SEEN. FELT.</span><span class="interlude-star">✳</span><span>NOT SEEN. FELT.</span><span class="interlude-star">✳</span><span>NOT SEEN. FELT.</span><span class="interlude-star">✳</span></div><div class="interlude-group"><span>NOT SEEN. FELT.</span><span class="interlude-star">✳</span><span>NOT SEEN. FELT.</span><span class="interlude-star">✳</span><span>NOT SEEN. FELT.</span><span class="interlude-star">✳</span></div></div></div>
 
     <section class="manifesto paper-section" id="philosophy" aria-labelledby="manifestoTitle">
       <div class="section-index reveal"><span>01 / THE MAISON</span><span>A PHILOSOPHY OF PRESENCE</span></div>
@@ -106,6 +113,7 @@
         </div>
         <div class="experience-product" id="experienceProduct">
           <div class="product-halo" aria-hidden="true"></div>
+          <div class="product-sparkles" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
           <span class="product-outline-text" id="productOutline" aria-hidden="true">É</span>
           <img id="stageImage" src="./assets/eclipse.webp" alt="Éclipse amber fragrance bottle" width="720" height="1080" decoding="async">
           <span class="product-caption">MAISON VELORA / NO. <span id="productNo">01</span></span>

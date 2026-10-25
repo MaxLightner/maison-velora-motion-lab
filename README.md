@@ -6,8 +6,10 @@ A cinematic, responsive, static fragrance-showcase concept.
 
 ## Experience
 
-- A scroll-directed opening: the full-bleed portrait slowly pushes in, the opening title recedes, and a full-screen memory refrain emerges before the manifesto.
+- A visibly animated first impression: three staggered title reveals, drifting golden fragrance trails rendered in a lightweight canvas, moving light beams and a pointer-reactive editorial portrait. These effects remain active while the page is idle.
+- A scroll-directed opening: the full-bleed portrait dramatically pushes in, the opening title recedes and blurs, and a full-screen memory refrain emerges before the manifesto.
 - Three distinct fragrance characters in a pinned scent theatre. As visitors scroll, the fragrance, bottle, color atmosphere, copy, orbiting light, and chapter progress change from Éclipse to Solenne to Vesper.
+- Bottles softly float, respond in perspective to mouse movement, and are surrounded by moving light motes.
 - Manual fragrance tabs navigate between those chapters on desktop, and switch scents directly on mobile; the theatre does not hijack the mouse wheel.
 - Meaningful scent anatomy: top, heart, and base notes with fragrance-specific examples.
 - Animated fragrance-note illustrations, subtle editorial-photo parallax, pointer-responsive collection cards, and native, keyboard-accessible product-detail dialogs.
@@ -17,7 +19,7 @@ The fragrance house, compositions, and products are **fictional**. This is a des
 
 ## Technical approach
 
-Buildless HTML, CSS and JavaScript. No runtime dependencies or animation framework; cinematic motion uses CSS transitions, `requestAnimationFrame` with eased scroll progress, and IntersectionObserver. Existing optimized WebP assets are reused.
+Buildless HTML, CSS and JavaScript. No runtime dependencies or animation framework; cinematic motion uses CSS transitions, a 2D canvas with capped device pixel ratio, `requestAnimationFrame` with eased scroll progress, and IntersectionObserver. Existing optimized WebP assets are reused.
 
 ### Local preview
 
@@ -39,6 +41,7 @@ git diff --check
 ### Accessibility
 
 - Semantic section headings, navigation, descriptive alternative text and visible focus.
+- An always-visible `MOTION ON/OFF` control respects the device's reduced-motion preference by default, but permits a deliberate override. A `REPLAY` button restarts the opening animation; the preference is persisted locally.
 - `prefers-reduced-motion` supported, with sticky visual journeys and pointer tilts disabled in that mode; no forced scroll or mouse-wheel hijacking.
 - Scent selection responds to left/right arrow keys.
 - Native `<dialog>` supports focus containment, Escape to close, and backdrop dismissal.

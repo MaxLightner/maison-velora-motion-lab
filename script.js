@@ -51,6 +51,16 @@ const phases = [
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+const motionPreference = "maison-velora-motion";
+let storedMotion = null;
+try { storedMotion = window.localStorage.getItem(motionPreference); } catch { /* Browsers may block storage. */ }
+let motionEnabled = storedMotion === "on" || (storedMotion === null && !reducedMotion.matches);
+document.documentElement.classList.toggle("motion-forced", motionEnabled);
+document.documentElement.classList.toggle("motion-disabled", !motionEnabled);
+if (motionEnabled) {
+  document.documentElement.classList.add("motion-boot");
+  requestAnimationFrame(() => requestAnimationFrame(() => document.documentElement.classList.add("motion-ready")));
+}
 const header = $("#header");
 const progress = $("#scrollProgress");
 const experience = $("#discover");
@@ -74,7 +84,7 @@ function setScent(index, { focus = false } = {}) {
   const changed = activeScent !== index;
   activeScent = index;
   const ticket = ++changeTicket;
-  if (changed && !reducedMotion.matches) stage.classList.add("is-transitioning");
+  if (changed && motionEnabled) stage.classList.add("is-transitioning");
   const commit = () => {
     if (ticket !== changeTicket) return;
     experience.dataset.mood = chosen.slug;
@@ -90,18 +100,18 @@ function setScent(index, { focus = false } = {}) {
     stageImage.src = chosen.image;
     stageImage.alt = `${chosen.name} fragrance bottle`;
     stageImage.classList.remove("is-changing");
-    if (changed && !reducedMotion.matches) {
+    if (changed && motionEnabled) {
       requestAnimationFrame(() => stage.classList.remove("is-transitioning"));
     } else {
       stage.classList.remove("is-transitioning");
     }
     updatePhase(activePhase);
   };
-  if (reducedMotion.matches || !changed) {
+  if (!motionEnabled || !changed) {
     commit();
   } else {
     stageImage.classList.add("is-changing");
-    window.setTimeout(commit, 320);
+    window.setTimeout(commit, 520);
   }
   $$(".scent-option").forEach((button, i) => {
     button.classList.toggle("is-active", i === index);
@@ -128,7 +138,7 @@ function selectScentByUser(index, options = {}) {
   if (canRunJourney()) {
     const distance = scentJourney.offsetHeight - window.innerHeight;
     const top = window.scrollY + scentJourney.getBoundingClientRect().top;
-    window.scrollTo({ top: top + distance * (index / 2), behavior: reducedMotion.matches ? "instant" : "smooth" });
+    window.scrollTo({ top: top + distance * (index / 2), behavior: motionEnabled ? "smooth" : "instant" });
   }
 }
 
@@ -218,11 +228,11 @@ const motion = { hero: 0, journey: 0, heroTarget: 0, journeyTarget: 0, raf: 0 };
 const desktopMotion = window.matchMedia("(min-width: 761px)");
 
 function canRunJourney() {
-  return desktopMotion.matches && !reducedMotion.matches;
+  return desktopMotion.matches && motionEnabled;
 }
 
 function updateMotionTargets() {
-  if (reducedMotion.matches) return;
+  if (!motionEnabled) return;
   const heroRect = heroSequence.getBoundingClientRect();
   const heroTravel = Math.max(1, heroSequence.offsetHeight - window.innerHeight);
   motion.heroTarget = clamp01(-heroRect.top / heroTravel);
@@ -235,21 +245,24 @@ function updateMotionTargets() {
 
 function directMotion() {
   motion.raf = 0;
-  if (reducedMotion.matches) return;
+  if (!motionEnabled) return;
   motion.hero += (motion.heroTarget - motion.hero) * .115;
   motion.journey += (motion.journeyTarget - motion.journey) * .14;
 
   const heroP = motion.hero;
-  const heroFade = 1 - smoothStep((heroP - .13) / .40);
-  const finalFade = smoothStep((heroP - .55) / .36);
-  hero.style.setProperty("--hero-scale", (1 + .22 * heroP).toFixed(4));
-  hero.style.setProperty("--hero-brightness", (1 - .3 * heroP).toFixed(3));
+  const heroFade = 1 - smoothStep((heroP - .09) / .3);
+  const finalFade = smoothStep((heroP - .43) / .29);
+  hero.style.setProperty("--hero-scale", (1 + .57 * heroP).toFixed(4));
+  hero.style.setProperty("--hero-brightness", (1 - .53 * heroP).toFixed(3));
   hero.style.setProperty("--hero-copy-opacity", heroFade.toFixed(3));
-  hero.style.setProperty("--hero-copy-shift", `${(-110 * heroP).toFixed(1)}px`);
+  hero.style.setProperty("--hero-copy-shift", `${(-195 * heroP).toFixed(1)}px`);
+  hero.style.setProperty("--hero-copy-x", `${(-130 * heroP).toFixed(1)}px`);
+  hero.style.setProperty("--hero-copy-blur", `${(7 * (1 - heroFade)).toFixed(1)}px`);
   hero.style.setProperty("--hero-final-opacity", finalFade.toFixed(3));
   hero.style.setProperty("--hero-final-shift", `${(55 * (1 - finalFade)).toFixed(1)}px`);
-  hero.style.setProperty("--hero-final-shade", (.35 * finalFade).toFixed(3));
-  hero.style.setProperty("--hero-line-width", `${(110 * finalFade).toFixed(1)}px`);
+  hero.style.setProperty("--hero-final-shade", (.75 * finalFade).toFixed(3));
+  hero.style.setProperty("--hero-line-width", `${(180 * finalFade).toFixed(1)}px`);
+  hero.style.setProperty("--sillage-opacity", (1 - .72 * heroP).toFixed(3));
 
   const manifestoProgress = clamp01((window.innerHeight - manifesto.getBoundingClientRect().top) / (manifesto.offsetHeight * .65));
   manifesto.style.setProperty("--manifesto-line", `${(100 * smoothStep(manifestoProgress)).toFixed(2)}%`);
@@ -269,10 +282,150 @@ function directMotion() {
   }
 }
 
+// Visitors can explicitly override a system-level reduce-motion setting.
+// The control is visible, and the selection is remembered across visits.
+const motionToggle = $("#motionToggle");
+const motionStatus = $("#motionStatus");
+const heroSillage = $("#heroSillage");
+const sillageContext = heroSillage?.getContext("2d", { alpha: true });
+let sillageFrame = 0;
+let sillageWidth = 0;
+let sillageHeight = 0;
+const sillageDots = Array.from({ length: 34 }, (_, index) => ({
+  seed: ((index * 47) % 53) / 53,
+  row: ((index * 19) % 41) / 41,
+  speed: .6 + ((index * 13) % 17) / 20,
+  radius: 1.1 + ((index * 7) % 11) / 6,
+  arc: ((index * 11) % 19) / 19
+}));
+
+function resizeSillage() {
+  if (!sillageContext) return;
+  const bounds = hero.getBoundingClientRect();
+  const scale = Math.min(window.devicePixelRatio || 1, 1.5);
+  sillageWidth = Math.max(1, bounds.width);
+  sillageHeight = Math.max(1, bounds.height);
+  heroSillage.width = Math.round(sillageWidth * scale);
+  heroSillage.height = Math.round(sillageHeight * scale);
+  sillageContext.setTransform(scale, 0, 0, scale, 0, 0);
+}
+
+function paintSillage(time) {
+  sillageFrame = 0;
+  if (!motionEnabled || document.hidden || !sillageContext) return;
+  const rect = hero.getBoundingClientRect();
+  if (rect.bottom > 0 && rect.top < window.innerHeight) {
+    const ctx = sillageContext;
+    ctx.clearRect(0, 0, sillageWidth, sillageHeight);
+    ctx.lineCap = "round";
+    for (const mote of sillageDots) {
+      const journey = ((time * .000013 * mote.speed + mote.seed) % 1);
+      const x = (-.12 + 1.01 * journey) * sillageWidth;
+      const wave = Math.sin(journey * 7.5 + mote.arc * 9.2 + time * .00022) * 46;
+      const y = (.18 + mote.row * .69) * sillageHeight + wave;
+      const length = 14 + mote.speed * 36;
+      const opacity = Math.sin(journey * Math.PI) * (.23 + mote.arc * .40);
+      ctx.beginPath();
+      ctx.moveTo(x - length, y + 11);
+      ctx.quadraticCurveTo(x - length * .5, y - 12, x, y);
+      ctx.strokeStyle = `rgba(246,190,124,${(opacity * .42).toFixed(3)})`;
+      ctx.lineWidth = mote.radius * .7;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x, y, mote.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,225,179,${opacity.toFixed(3)})`;
+      ctx.shadowColor = "#e6a062";
+      ctx.shadowBlur = mote.radius * 8;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+    }
+  }
+  sillageFrame = requestAnimationFrame(paintSillage);
+}
+
+function startSillage() {
+  if (!sillageContext || sillageFrame || !motionEnabled || document.hidden) return;
+  resizeSillage();
+  sillageFrame = requestAnimationFrame(paintSillage);
+}
+
+function stopSillage() {
+  if (sillageFrame) cancelAnimationFrame(sillageFrame);
+  sillageFrame = 0;
+  sillageContext?.clearRect(0, 0, sillageWidth, sillageHeight);
+}
+
+function setMotionEnabled(enabled, persist = true) {
+  motionEnabled = enabled;
+  if (persist) {
+    storedMotion = enabled ? "on" : "off";
+    try { window.localStorage.setItem(motionPreference, storedMotion); } catch { /* Storage is optional. */ }
+  }
+  document.documentElement.classList.toggle("motion-forced", enabled);
+  document.documentElement.classList.toggle("motion-disabled", !enabled);
+  motionToggle.classList.toggle("is-on", enabled);
+  motionToggle.setAttribute("aria-pressed", String(enabled));
+  motionToggle.setAttribute("aria-label", enabled ? "Turn animations off" : "Turn animations on");
+  motionStatus.textContent = enabled ? "MOTION ON" : "MOTION OFF";
+  if (enabled) {
+    document.documentElement.classList.add("motion-ready");
+    updateMotionTargets();
+    startSillage();
+  } else {
+    stopSillage();
+    if (motion.raf) cancelAnimationFrame(motion.raf);
+    motion.raf = 0;
+    $$(".reveal").forEach(element => element.classList.add("is-visible"));
+  }
+}
+
+motionToggle.addEventListener("click", () => setMotionEnabled(!motionEnabled));
+$("#replayIntro").addEventListener("click", () => {
+  if (!motionEnabled) setMotionEnabled(true);
+  window.scrollTo({ top: 0, behavior: "instant" });
+  document.documentElement.classList.remove("motion-ready");
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    window.setTimeout(() => document.documentElement.classList.add("motion-ready"), 100);
+  }));
+});
+
+hero.addEventListener("pointermove", event => {
+  if (!motionEnabled || event.pointerType === "touch") return;
+  const rect = hero.getBoundingClientRect();
+  const x = clamp01((event.clientX - rect.left) / rect.width) - .5;
+  const y = clamp01((event.clientY - rect.top) / rect.height) - .5;
+  hero.style.setProperty("--hero-pan-x", `${(-x * 48).toFixed(1)}px`);
+  hero.style.setProperty("--hero-pan-y", `${(-y * 29).toFixed(1)}px`);
+});
+hero.addEventListener("pointerleave", () => {
+  hero.style.setProperty("--hero-pan-x", "0px");
+  hero.style.setProperty("--hero-pan-y", "0px");
+});
+
+const experienceProduct = $("#experienceProduct");
+experienceProduct.addEventListener("pointermove", event => {
+  if (!motionEnabled || event.pointerType === "touch") return;
+  const rect = experienceProduct.getBoundingClientRect();
+  const x = clamp01((event.clientX - rect.left) / rect.width) - .5;
+  const y = clamp01((event.clientY - rect.top) / rect.height) - .5;
+  experienceProduct.style.setProperty("--bottle-ry", `${(x * 19).toFixed(2)}deg`);
+  experienceProduct.style.setProperty("--bottle-rx", `${(-y * 12).toFixed(2)}deg`);
+  experienceProduct.parentElement.style.setProperty("--stage-glow-x", `${(x * 90).toFixed(1)}px`);
+});
+experienceProduct.addEventListener("pointerleave", () => {
+  experienceProduct.style.removeProperty("--bottle-ry");
+  experienceProduct.style.removeProperty("--bottle-rx");
+  experienceProduct.parentElement.style.removeProperty("--stage-glow-x");
+});
+
+window.addEventListener("resize", resizeSillage, { passive: true });
+document.addEventListener("visibilitychange", () => document.hidden ? stopSillage() : startSillage());
+setMotionEnabled(motionEnabled, false);
+
 // The product's light subtly follows the pointer. Keyboard and touch use a fixed composition.
 $$(".fragrance-card-button").forEach(card => {
   card.addEventListener("pointermove", event => {
-    if (event.pointerType === "touch" || reducedMotion.matches) return;
+    if (event.pointerType === "touch" || !motionEnabled) return;
     const rect = card.getBoundingClientRect();
     const x = clamp01((event.clientX - rect.left) / rect.width);
     const y = clamp01((event.clientY - rect.top) / rect.height);
@@ -293,7 +446,7 @@ desktopMotion.addEventListener?.("change", updateMotionTargets);
 window.addEventListener("pageshow", updateMotionTargets);
 updateScrollUi();
 
-if ("IntersectionObserver" in window && !reducedMotion.matches) {
+if ("IntersectionObserver" in window && motionEnabled) {
   const revealObserver = new IntersectionObserver(entries => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -307,7 +460,8 @@ if ("IntersectionObserver" in window && !reducedMotion.matches) {
   $$(".reveal").forEach(element => element.classList.add("is-visible"));
 }
 reducedMotion.addEventListener?.("change", event => {
-  if (event.matches) $$(".reveal").forEach(element => element.classList.add("is-visible"));
+  if (storedMotion !== null) return;
+  setMotionEnabled(!event.matches, false);
 });
 
 updatePhase(0);
