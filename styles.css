@@ -131,3 +131,76 @@ img{display:block;max-width:100%}
 }
 @media(max-width:380px){.hero h1{font-size:69px}.stage-title{font-size:80px}.scent-option strong{font-size:25px}.hero-intro p{font-size:11px}.collection{padding-left:5vw;padding-right:5vw}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.reveal{opacity:1;transform:none}}
+
+/* CINEMATIC NARRATIVE: the visitor's own scroll drives the camera and mood. */
+.experience{overflow:visible}
+.hero-sequence{height:190svh;position:relative;background:#130e0b}
+.hero-sequence .hero{position:sticky;top:0;height:100svh;min-height:0}
+.hero-sequence .hero-image{transform:scale(var(--hero-scale,1));filter:brightness(var(--hero-brightness,1));will-change:transform;transition:filter .2s}
+.hero-sequence .hero-content{opacity:var(--hero-copy-opacity,1);transform:translateY(calc(-41% + var(--hero-copy-shift,0px)));will-change:transform,opacity}
+.hero-sequence .hero-rail,.hero-sequence .hero-bottomline,.hero-sequence .hero-edition{opacity:var(--hero-copy-opacity,1)}
+.hero-transition{position:absolute;z-index:3;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:30px;opacity:var(--hero-final-opacity,0);transform:translateY(var(--hero-final-shift,55px));pointer-events:none;padding:20px;background:rgba(11,8,7,var(--hero-final-shade,0))}
+.hero-transition>span{font:700 11px/1.5 var(--sans);letter-spacing:.26em;color:#d5b18a}
+.hero-transition strong{font:300 clamp(85px,13vw,205px)/.76 var(--serif);letter-spacing:-.055em;color:#f0e6d8}
+.hero-transition em{font-weight:300;color:#d0a77e}
+.hero-transition i{display:block;width:var(--hero-line-width,0px);height:1px;background:#d3ab80}
+.interlude{position:relative;z-index:2}
+.manifesto-main .display-title{position:relative}
+.manifesto-main .display-title::after{content:"";display:block;height:1px;width:var(--manifesto-line,0%);max-width:85%;margin-top:48px;background:linear-gradient(90deg,#956e4b,#ddc5a5);transition:width .14s linear}
+
+.scent-journey{height:350svh;position:relative;isolation:isolate}
+.journey-sticky{position:sticky;top:0;height:100svh;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden}
+.journey-sticky .experience-stage{flex:1;min-height:0;align-items:center;padding-top:20px}
+.journey-sticky .experience-text{padding:10px 0}
+.journey-sticky .stage-descriptor{margin-top:26px}
+.journey-sticky .stage-title{font-size:clamp(86px,9.5vw,157px);margin-bottom:19px}
+.journey-sticky .stage-quote{font-size:clamp(25px,2.4vw,38px);margin-bottom:25px}
+.journey-sticky .stage-details{margin-bottom:20px}
+.journey-sticky .experience-product{height:min(68svh,590px)}
+.journey-sticky .scent-selector{flex:none;margin-top:0}
+.journey-track{height:2px;background:rgba(250,224,195,.13);margin:0 8.3vw;position:relative;flex:none}
+.journey-track span{height:100%;width:0;display:block;background:#d0a77e;box-shadow:0 0 12px #ca8759;will-change:width}
+.journey-instruction{font-size:9px;letter-spacing:.25em;color:#9e8b7c;text-align:center;display:block;flex:none;padding:13px 0 18px}
+.product-halo::before{content:"";position:absolute;inset:-2px;border-radius:50%;border:1px solid rgba(238,188,139,.16);animation:halo-breathe 5s ease-in-out infinite}
+.product-halo::after{content:"";position:absolute;left:50%;top:50%;width:5px;height:5px;border-radius:50%;background:#ffe0aa;box-shadow:0 0 16px 6px #dca66d61;transform:rotate(0deg) translateX(clamp(100px,19vw,290px));transform-origin:0 0;animation:sillage-orbit 18s linear infinite}
+@keyframes halo-breathe{0%,100%{transform:scale(.96);opacity:.4}50%{transform:scale(1.065);opacity:.9}}
+@keyframes sillage-orbit{to{transform:rotate(360deg) translateX(clamp(100px,19vw,290px))}}
+.experience-stage .stage-title,.experience-stage .stage-quote,.experience-stage .stage-descriptor,.experience-stage .stage-details,.experience-stage .stage-count{transition:opacity .34s ease,filter .34s ease,transform .45s var(--ease)}
+.experience-stage.is-transitioning .stage-title,.experience-stage.is-transitioning .stage-quote,.experience-stage.is-transitioning .stage-descriptor,.experience-stage.is-transitioning .stage-details,.experience-stage.is-transitioning .stage-count{opacity:.08;filter:blur(9px);transform:translateY(17px)}
+.experience-product .product-outline-text{transition:opacity .55s,transform .7s var(--ease)}
+.experience-stage.is-transitioning .product-outline-text{opacity:0;transform:translateY(40px) rotate(-8deg)}
+.note-phase .phase-art::before{transition:transform .75s var(--ease),filter .75s}
+.note-phase:hover .phase-art::before,.note-phase.is-active .phase-art::before{transform:translate(-50%,-50%) scale(1.12);filter:saturate(1.2)}
+.editorial-visual img{transform:translateY(var(--editorial-shift,0px)) scale(1.12);will-change:transform}
+.editorial-visual:hover img{transform:translateY(var(--editorial-shift,0px)) scale(1.16)}
+.fragrance-card-button{transform:perspective(1000px) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg));transition:transform .4s var(--ease)}
+.fragrance-card{perspective:1000px}
+.fragrance-card-button::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at var(--glint-x,50%) var(--glint-y,50%),rgba(255,235,203,.18),transparent 55%);opacity:0;transition:opacity .4s}
+.fragrance-card-button:hover::after{opacity:1}
+.closing-orbit{animation:closing-orbit 38s linear infinite}
+@keyframes closing-orbit{to{transform:translateX(-50%) rotate(360deg)}}
+@media(max-width:1100px){.journey-track{margin-inline:6vw}.journey-sticky .stage-title{font-size:clamp(78px,9.5vw,138px)}}
+@media(max-width:760px){
+  .hero-sequence{height:145svh}.hero-sequence .hero{height:100svh}
+  .hero-transition{gap:20px}.hero-transition strong{font-size:clamp(69px,17vw,130px)}
+  .scent-journey{height:auto}.journey-sticky{position:relative;top:auto;height:auto;display:block;overflow:visible}
+  .journey-sticky .experience-stage{min-height:0;padding-top:0}
+  .journey-sticky .experience-product{height:390px}
+  .journey-sticky .experience-text{padding:10px 0 35px}
+  .journey-sticky .stage-descriptor{margin-top:22px}
+  .journey-sticky .stage-title{font-size:clamp(84px,20vw,150px);margin-bottom:12px}
+  .journey-sticky .stage-quote{font-size:30px;margin-bottom:25px}
+  .journey-sticky .scent-selector{margin:15px 7vw 0}
+  .journey-track{margin:0 7vw}.journey-instruction{display:none}
+  .hero-transition i{max-width:140px}
+  .product-halo::after{display:none}
+  .editorial-visual img{transform:none!important}
+  .fragrance-card-button{transform:none!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-sequence{height:auto}.hero-sequence .hero{position:relative;height:100svh}
+  .hero-transition{display:none}.hero-image{transform:none!important;filter:none!important}.hero-content{opacity:1!important;transform:translateY(-41%)!important}
+  .scent-journey{height:auto}.journey-sticky{position:relative;height:auto;display:block;overflow:visible}
+  .journey-sticky .experience-stage{min-height:650px}.journey-instruction{display:none}
+  .editorial-visual img{transform:none!important}
+}

@@ -15,8 +15,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="preload" href="./assets/hero.webp" as="image" fetchpriority="high">
-  <link rel="stylesheet" href="./styles.css?v=9">
-  <script defer src="./script.js?v=9"></script>
+  <link rel="stylesheet" href="./styles.css?v=10-cinematic">
+  <script defer src="./script.js?v=10-cinematic"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -42,6 +42,7 @@
   </header>
 
   <main id="main">
+    <div class="hero-sequence" id="heroSequence">
     <section class="hero" id="top" aria-labelledby="heroTitle">
       <div class="hero-image"><img src="./assets/hero.webp" alt="Woman in black silk, illuminated by warm cinematic light" width="1672" height="941" fetchpriority="high" decoding="async"></div>
       <div class="hero-shade" aria-hidden="true"></div>
@@ -56,7 +57,9 @@
       </div>
       <div class="hero-bottomline"><span>SCROLL TO ENTER</span><span class="vertical-stroke"></span><span>01 / 05</span></div>
       <span class="hero-edition">MAISON VELORA / OLFACTORY STORIES</span>
+      <div class="hero-transition" aria-hidden="true"><span>THE INVISIBLE LEAVES A TRACE.</span><strong>What <em>remains.</em></strong><i></i></div>
     </section>
+    </div>
 
     <div class="interlude" aria-hidden="true"><span>NOT SEEN. FELT.</span><span class="interlude-star">✳</span><span>NOT SEEN. FELT.</span><span class="interlude-star">✳</span><span>NOT SEEN. FELT.</span><span class="interlude-star">✳</span></div>
 
@@ -87,6 +90,8 @@
         <h2 id="experienceTitle">Choose your <em>presence.</em></h2>
         <p>One maison, three entirely different feelings. Select a fragrance to discover its character.</p>
       </div>
+      <div class="scent-journey" id="scentJourney">
+      <div class="journey-sticky">
       <div class="experience-stage" id="experienceStage">
         <div class="experience-text" aria-live="polite">
           <span class="stage-count" id="stageCount">01 / 03 — AMBER · IRIS · BERGAMOT</span>
@@ -111,6 +116,10 @@
         <button class="scent-option is-active" type="button" data-scent="0" aria-pressed="true"><span>01</span><strong>Éclipse</strong><small>THE GOLDEN SHADOW</small></button>
         <button class="scent-option" type="button" data-scent="1" aria-pressed="false"><span>02</span><strong>Solenne</strong><small>THE SOFT RADIANCE</small></button>
         <button class="scent-option" type="button" data-scent="2" aria-pressed="false"><span>03</span><strong>Vesper</strong><small>THE AFTER HOURS</small></button>
+      </div>
+      <div class="journey-track" aria-hidden="true"><span id="journeyFill"></span></div>
+      <span class="journey-instruction">SCROLL TO TRAVEL BETWEEN THREE MOODS</span>
+      </div>
       </div>
       <p class="experience-footnote">IMAGINED FRAGRANCES · CREATED AS A DIGITAL CONCEPT</p>
     </section>
