@@ -3,59 +3,212 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#0c0a09">
-  <meta name="description" content="Maison Velora — an immersive concept experience in fragrance and beauty.">
-  <title>Maison Velora — An Aura Beyond Words</title>
+  <meta name="theme-color" content="#100e0d">
+  <meta name="description" content="Maison Velora is an imagined fragrance maison. Explore Éclipse, Solenne and Vesper: three distinctive olfactory stories told through light, memory and presence.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Maison Velora — The Art of Being Remembered">
+  <meta property="og:description" content="Three fragrances. Three states of being. A cinematic concept experience.">
+  <meta property="og:image" content="https://maxlightner.github.io/maison-velora-motion-lab/assets/hero.webp">
+  <title>Maison Velora — The Art of Being Remembered</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23100e0d'/%3E%3Ctext x='32' y='43' font-family='Georgia' font-size='42' fill='%23d6b58d' text-anchor='middle'%3EV%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="preload" as="image" href="./assets/hero.webp" fetchpriority="high">
-  <link rel="stylesheet" href="./styles.css?v=8b-mask-polish">
-  <script src="./script.js?v=8b-mask-polish" defer></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" href="./assets/hero.webp" as="image" fetchpriority="high">
+  <link rel="stylesheet" href="./styles.css?v=9">
+  <script defer src="./script.js?v=9"></script>
 </head>
 <body>
-  <div class="preloader" id="preloader" aria-hidden="true"><span class="preloader-mark">V<span>.</span></span><span class="preloader-copy">AN EXPERIENCE IN BEAUTY</span><span class="preloader-track"><span></span></span></div>
-  <div class="page-progress" id="pageProgress"></div>
-  <div class="cursor-dot" id="cursorDot"></div><div class="cursor-halo" id="cursorHalo"><span>VIEW</span></div>
-  <div class="grain"></div>
-  <header class="site-header" id="siteHeader">
-    <a class="brand magnetic" href="#top" aria-label="Maison Velora home"><span class="brand-mark">V<span>.</span></span><span class="brand-words">MAISON<br>VELORA</span></a>
-    <nav class="desktop-nav" aria-label="Main navigation"><a class="magnetic" href="#maison">THE MAISON</a><a class="magnetic" href="#ritual">THE RITUAL</a><a class="magnetic" href="#collection">COLLECTION</a><a class="magnetic" href="#beauty">BEAUTY</a></nav>
-    <div class="header-actions"><button class="motion-toggle magnetic" id="motionToggle" aria-label="Reduce animation" aria-pressed="false"><span class="motion-bars"><i></i><i></i><i></i><i></i></span><span>REDUCE MOTION</span></button><button class="menu-toggle magnetic" id="menuToggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button></div>
-  </header>
-  <div class="mobile-menu" id="mobileMenu" aria-hidden="true"><a href="#maison">The Maison</a><a href="#ritual">The Ritual</a><a href="#collection">Collection</a><a href="#beauty">Beauty</a><small>MAISON VELORA · PARIS</small></div>
-  <main id="top">
-    <div class="hero-scroll-scene" id="heroScene">
-    <section class="hero" id="hero">
-      <div class="hero-image-wrap"><img class="hero-image" id="heroImage" src="./assets/hero.webp" alt="Cinematic editorial portrait of a woman in black satin" fetchpriority="high"></div>
-      <div class="hero-vignette"></div><div class="hero-glow" id="heroGlow"></div>
-      <div class="hero-index"><span class="hero-index-line"></span><span>MAISON VELORA</span><span>PARIS · EST. IMAGINED</span></div>
-      <div class="hero-content"><p class="eyebrow hero-eyebrow animate-enter"><span></span>THE ART OF THE UNFORGETTABLE</p><h1 class="hero-title" id="heroTitle"><span class="title-line"><em>An</em> aura</span><span class="title-line">beyond</span><span class="title-line"><i>words.</i></span></h1><div class="hero-bottom animate-enter"><p>Fragrance that lingers<br>long after the moment.</p><a href="#maison" class="round-link magnetic"><span>ENTER<br>THE MAISON</span><b>↗</b></a></div></div>
-      <div class="hero-film-grain" aria-hidden="true"></div>
-      <div class="hero-transition-word" id="heroTransition" aria-hidden="true"><span>ÉCLIPSE</span><small>THE SCENT OF AN AFTERIMAGE</small></div>
-      <div class="hero-glint" aria-hidden="true"></div>
-      <div class="hero-scroll"><span>SCROLL TO FEEL</span><span class="scroll-rule"><i></i></span></div><div class="hero-side-number">01 / 06</div>
-    </section>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+  <header class="header" id="header">
+    <a class="identity" href="#top" aria-label="Maison Velora, back to top">
+      <span class="identity-monogram">V<span>.</span></span>
+      <span class="identity-name">MAISON<br>VELORA</span>
+    </a>
+    <nav class="desktop-nav" aria-label="Main navigation">
+      <a href="#philosophy">THE MAISON</a>
+      <a href="#discover">THE FRAGRANCES</a>
+      <a href="#art-of-scent">THE ART OF SCENT</a>
+    </nav>
+    <div class="header-right">
+      <span class="header-location">PARIS · AN IMAGINED MAISON</span>
+      <button class="menu-button" id="menuButton" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="mobileNav"><span></span><span></span></button>
     </div>
-    <div class="running-line" aria-hidden="true"><div class="running-line-inner"><span>THE ART OF PRESENCE</span><b>✧</b><span>SCENT IS MEMORY</span><b>✧</b><span>THE ART OF PRESENCE</span><b>✧</b><span>SCENT IS MEMORY</span><b>✧</b><span>THE ART OF PRESENCE</span><b>✧</b><span>SCENT IS MEMORY</span><b>✧</b></div></div>
-    <section class="maison-section" id="maison">
-      <div class="section-topline reveal"><span>01 — OUR PHILOSOPHY</span><span>AN EXERCISE IN FEELING</span></div>
-      <div class="maison-layout"><div class="maison-copy"><p class="gold-kicker reveal">THE INVISIBLE SIGNATURE</p><h2 class="maison-heading reveal">Not simply<br><em>worn.</em><br><span>Remembered.</span></h2><p class="maison-description reveal">Some things cannot be held. A fleeting glance. The warmth of a room. The trace of a presence. We make the invisible unforgettable.</p><a class="text-link magnetic reveal" href="#ritual"><span>DISCOVER OUR WORLD</span><span>↗</span></a></div><div class="maison-visual"><div class="maison-photo-frame image-reveal tilt" data-tilt><img src="./assets/eclipse.webp" alt="Smoky amber fragrance bottle on polished black stone" loading="lazy" decoding="async"></div><div class="orbit-seal" aria-hidden="true"><svg viewBox="0 0 160 160"><defs><path id="orbitPath" d="M80,80 m-58,0 a58,58 0 1,1 116,0 a58,58 0 1,1 -116,0"/></defs><text><textPath href="#orbitPath">MAISON VELORA · BEAUTY IN MOTION ·&nbsp; </textPath></text></svg><span>V.</span></div><span class="photo-caption">NO. 01 / OLFACTORY ART</span></div></div>
+    <nav class="mobile-nav" id="mobileNav" aria-label="Mobile navigation" inert>
+      <a href="#philosophy">The Maison</a><a href="#discover">The Fragrances</a><a href="#art-of-scent">The Art of Scent</a><a href="#collection">Collection</a>
+      <span>AN IMAGINED MAISON · PARIS</span>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top" aria-labelledby="heroTitle">
+      <div class="hero-image"><img src="./assets/hero.webp" alt="Woman in black silk, illuminated by warm cinematic light" width="1672" height="941" fetchpriority="high" decoding="async"></div>
+      <div class="hero-shade" aria-hidden="true"></div>
+      <div class="hero-rail"><span>V / 001</span><span>THE OLFACTORY COLLECTION</span></div>
+      <div class="hero-content">
+        <p class="eyebrow hero-eyebrow"><span class="eyebrow-line"></span> AN INVISIBLE SIGNATURE</p>
+        <h1 id="heroTitle">The art of<br><em>being</em><br>remembered.</h1>
+        <div class="hero-intro">
+          <p>Some impressions never leave.<br>Discover the scent that feels like you.</p>
+          <a class="circle-link" href="#discover" aria-label="Explore the fragrance collection"><span>EXPLORE<br>THE MAISON</span><span class="circle-arrow" aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+      <div class="hero-bottomline"><span>SCROLL TO ENTER</span><span class="vertical-stroke"></span><span>01 / 05</span></div>
+      <span class="hero-edition">MAISON VELORA / OLFACTORY STORIES</span>
     </section>
-    <section class="ritual-section" id="ritual"><div class="ritual-sticky" id="ritualStage"><div class="ritual-backdrop"><div class="ritual-orb"></div><div class="ritual-grid"></div></div><div class="ritual-inner"><div class="ritual-intro"><span class="light-kicker">02 — THREE EXPRESSIONS</span><h2>One maison.<br><em>Three moods.</em></h2><p>SCROLL TO REVEAL EACH FRAGRANCE</p></div><div class="ritual-bottle" id="ritualBottle" aria-label="Three Maison Velora fragrances">
-  <img class="ritual-product is-active" data-fragrance="0" src="./assets/eclipse.webp" alt="Éclipse amber perfume with branded gold label" loading="lazy" decoding="async">
-  <img class="ritual-product" data-fragrance="1" src="./assets/solenne.webp" alt="Solenne ivory perfume with branded gold label" loading="lazy" decoding="async">
-  <img class="ritual-product" data-fragrance="2" src="./assets/vesper.webp" alt="Vesper plum perfume with branded gold label" loading="lazy" decoding="async">
-</div><div class="ritual-notes"><article class="ritual-note is-active" data-note="0"><span class="note-number">I. THE GOLDEN SHADOW</span><h3>Éclipse</h3><p>Smoked amber · iris · bergamot.<br>Warmth that lingers after dark.</p></article><article class="ritual-note" data-note="1"><span class="note-number">II. THE SOFT RADIANCE</span><h3>Solenne</h3><p>White florals · suede · musk.<br>Light, with quiet confidence.</p></article><article class="ritual-note" data-note="2"><span class="note-number">III. THE AFTER HOURS</span><h3>Vesper</h3><p>Black rose · oud · saffron.<br>Depth with a beautiful edge.</p></article></div><div class="ritual-steps" aria-hidden="true"><span class="is-active"></span><span></span><span></span></div><span class="ritual-vertical">CRAFTED TO BE FELT</span></div></div></section>
-    <section class="collection-section" id="collection"><div class="collection-top"><div><p class="gold-kicker reveal">03 — THE OLFACTORY WARDROBE</p><h2 class="display-heading reveal">Objects of <em>desire.</em></h2></div><div class="collection-tools"><p>THREE EXPRESSIONS.<br>ONE UNMISTAKABLE PRESENCE.</p><div class="gallery-buttons"><button class="gallery-button magnetic" id="prevProduct" aria-label="Previous fragrance">←</button><button class="gallery-button magnetic" id="nextProduct" aria-label="Next fragrance">→</button></div></div></div><div class="product-viewport" id="productViewport"><div class="product-track" id="productTrack">
-      <article class="product-card" data-product="0" tabindex="0" role="button" aria-label="Discover Éclipse"><div class="product-image product-image-1"><img src="./assets/eclipse.webp" alt="Éclipse perfume bottle with engraved nameplate" loading="lazy" decoding="async"><span class="product-view">DISCOVER ↗</span></div><div class="product-meta"><span>EXTRAIT DE PARFUM / 01</span><span>50 ML</span></div><h3>Éclipse</h3><p>Smoked amber · iris · bergamot</p></article>
-      <article class="product-card" data-product="1" tabindex="0" role="button" aria-label="Discover Solenne"><div class="product-image product-image-2"><img src="./assets/solenne.webp" alt="Solenne perfume bottle with engraved nameplate" loading="lazy" decoding="async"><span class="product-view">DISCOVER ↗</span></div><div class="product-meta"><span>EAU DE PARFUM / 02</span><span>75 ML</span></div><h3>Solenne</h3><p>White florals · suede · musk</p></article>
-      <article class="product-card" data-product="2" tabindex="0" role="button" aria-label="Discover Vesper"><div class="product-image product-image-3"><img src="./assets/vesper.webp" alt="Vesper perfume bottle with engraved nameplate" loading="lazy" decoding="async"><span class="product-view">DISCOVER ↗</span></div><div class="product-meta"><span>PARFUM / 03</span><span>50 ML</span></div><h3>Vesper</h3><p>Black rose · oud · saffron</p></article>
-    </div></div><div class="collection-footer"><span>EXCLUSIVE CREATIONS · IMAGINED FOR THE EXPERIENCE</span><span>← DRAG TO EXPLORE →</span></div></section>
-    <section class="beauty-section" id="beauty"><div class="beauty-image-panel"><img src="./assets/beauty.webp" alt="Editorial beauty close-up with red lips and ivory flower" loading="lazy" decoding="async" id="beautyImage"><div class="beauty-image-overlay"></div><div class="beauty-curtain beauty-curtain--left" aria-hidden="true"></div><div class="beauty-curtain beauty-curtain--right" aria-hidden="true"></div><span class="beauty-image-label">VELORA BEAUTÉ · NO. 04</span></div><div class="beauty-copy-panel"><div class="beauty-copy-inner"><p class="gold-kicker reveal">04 — BEYOND FRAGRANCE</p><h2 class="reveal">The skin<br>is a <em>canvas.</em></h2><p class="beauty-paragraph reveal">Color as an attitude. Texture as a sensation. Beauty that refuses to be ordinary.</p><button class="outlined-link magnetic reveal" id="beautyReveal">REVEAL THE COLORS <span>↗</span></button><div class="beauty-swatches" id="beautySwatches" aria-label="Imagined beauty shades"><span style="--swatch:#5c0e1c" title="Rouge Obscur"></span><span style="--swatch:#a35447" title="Terracotta Veil"></span><span style="--swatch:#b99579" title="Nude Sculpture"></span><span style="--swatch:#43252a" title="Plum Smoke"></span><small>THE ATELIER PALETTE</small></div></div><div class="beauty-panel-index">A STUDY IN CONTRAST / 2026</div></div></section>
-    <section class="statement-section" id="statement"><div class="statement-light"></div><p class="light-kicker reveal">05 — A LASTING IMPRESSION</p><h2 class="statement-title reveal">Leave a little<br><em>mystery</em> behind.</h2><div class="statement-divider reveal"></div><p class="statement-end reveal">BE PRESENT. BE UNFORGETTABLE.</p><span class="statement-star star-1">✦</span><span class="statement-star star-2">✦</span><span class="statement-star star-3">✦</span></section>
+
+    <div class="interlude" aria-hidden="true"><span>NOT SEEN. FELT.</span><span class="interlude-star">✳</span><span>NOT SEEN. FELT.</span><span class="interlude-star">✳</span><span>NOT SEEN. FELT.</span><span class="interlude-star">✳</span></div>
+
+    <section class="manifesto paper-section" id="philosophy" aria-labelledby="manifestoTitle">
+      <div class="section-index reveal"><span>01 / THE MAISON</span><span>A PHILOSOPHY OF PRESENCE</span></div>
+      <div class="manifesto-grid">
+        <div class="manifesto-intro reveal">
+          <span class="small-label">OUR BELIEF</span>
+          <p>Perfume is more than something you wear. It becomes part of how a moment is remembered.</p>
+          <span class="manuscript-mark" aria-hidden="true">V.</span>
+        </div>
+        <div class="manifesto-main">
+          <h2 class="display-title reveal" id="manifestoTitle">What remains<br>when <em>you leave?</em></h2>
+          <div class="manifesto-bottom reveal">
+            <div class="manifesto-rule"></div>
+            <p>The softness of a gesture. A room after sunset. Someone turning back for a second glance. Every fragrance in our imagined maison begins with a feeling — never just a list of notes.</p>
+            <a class="underlined-link" href="#discover">MEET THE THREE EXPRESSIONS <span>↗</span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="experience" id="discover" aria-labelledby="experienceTitle" data-mood="eclipse">
+      <div class="experience-atmosphere" aria-hidden="true"></div>
+      <div class="section-index experience-index"><span>02 / THE FRAGRANCES</span><span>THREE WAYS TO BE REMEMBERED</span></div>
+      <div class="experience-heading reveal">
+        <p class="small-label">THE OLFACTORY WARDROBE</p>
+        <h2 id="experienceTitle">Choose your <em>presence.</em></h2>
+        <p>One maison, three entirely different feelings. Select a fragrance to discover its character.</p>
+      </div>
+      <div class="experience-stage" id="experienceStage">
+        <div class="experience-text" aria-live="polite">
+          <span class="stage-count" id="stageCount">01 / 03 — AMBER · IRIS · BERGAMOT</span>
+          <p class="stage-descriptor" id="stageDescriptor">THE GOLDEN SHADOW</p>
+          <h3 class="stage-title" id="stageTitle">Éclipse<span class="stage-period">.</span></h3>
+          <p class="stage-quote" id="stageQuote">For the ones who know that the most beautiful light arrives just before dark.</p>
+          <div class="stage-details">
+            <div><span>THE FEELING</span><strong id="stageFeeling">Warm. Intimate. Magnetic.</strong></div>
+            <div><span>THE MOMENT</span><strong id="stageMoment">When the day turns to gold.</strong></div>
+          </div>
+          <button class="stage-discover" type="button" id="stageDiscover">DISCOVER ITS NOTES <span>↗</span></button>
+        </div>
+        <div class="experience-product" id="experienceProduct">
+          <div class="product-halo" aria-hidden="true"></div>
+          <span class="product-outline-text" id="productOutline" aria-hidden="true">É</span>
+          <img id="stageImage" src="./assets/eclipse.webp" alt="Éclipse amber fragrance bottle" width="720" height="1080" decoding="async">
+          <span class="product-caption">MAISON VELORA / NO. <span id="productNo">01</span></span>
+        </div>
+        <div class="experience-aside"><span id="stageSide">THE SCENT OF AN AFTERIMAGE</span><span>EAU DE MÉMOIRE</span></div>
+      </div>
+      <div class="scent-selector" role="group" aria-label="Choose a fragrance">
+        <button class="scent-option is-active" type="button" data-scent="0" aria-pressed="true"><span>01</span><strong>Éclipse</strong><small>THE GOLDEN SHADOW</small></button>
+        <button class="scent-option" type="button" data-scent="1" aria-pressed="false"><span>02</span><strong>Solenne</strong><small>THE SOFT RADIANCE</small></button>
+        <button class="scent-option" type="button" data-scent="2" aria-pressed="false"><span>03</span><strong>Vesper</strong><small>THE AFTER HOURS</small></button>
+      </div>
+      <p class="experience-footnote">IMAGINED FRAGRANCES · CREATED AS A DIGITAL CONCEPT</p>
+    </section>
+
+    <section class="note-story paper-section" id="art-of-scent" aria-labelledby="noteTitle">
+      <div class="section-index reveal"><span>03 / THE ART OF SCENT</span><span>THE ANATOMY OF AN IMPRESSION</span></div>
+      <div class="note-story-header">
+        <div class="reveal"><p class="small-label">A FRAGRANCE IS NEVER STILL</p><h2 class="display-title" id="noteTitle">It unfolds<br><em>with you.</em></h2></div>
+        <p class="note-story-lead reveal">The first spark isn't the whole story. A fragrance changes on skin — opening with light, finding its character, and leaving a trace.</p>
+      </div>
+      <div class="notes-explained">
+        <button type="button" class="note-phase is-active" data-phase="0" aria-pressed="true">
+          <span class="phase-index">I / FIRST CONTACT</span><span class="phase-art phase-art-top" aria-hidden="true"></span><strong>The opening</strong><span class="phase-bottom">THE FIRST IMPRESSION <b>↗</b></span>
+        </button>
+        <button type="button" class="note-phase" data-phase="1" aria-pressed="false">
+          <span class="phase-index">II / THE HEART</span><span class="phase-art phase-art-heart" aria-hidden="true"></span><strong>The character</strong><span class="phase-bottom">WHAT EMERGES <b>↗</b></span>
+        </button>
+        <button type="button" class="note-phase" data-phase="2" aria-pressed="false">
+          <span class="phase-index">III / THE TRACE</span><span class="phase-art phase-art-base" aria-hidden="true"></span><strong>The memory</strong><span class="phase-bottom">WHAT REMAINS <b>↗</b></span>
+        </button>
+      </div>
+      <div class="phase-explanation" aria-live="polite">
+        <span class="phase-badge" id="phaseBadge">01 — TOP NOTES</span>
+        <p id="phaseDescription">The first encounter. Bright, fleeting notes introduce the fragrance before gently making way for its deeper character.</p>
+        <span id="phaseExamples">ÉCLIPSE: BERGAMOT & BLACK PEPPER</span>
+      </div>
+    </section>
+
+    <section class="editorial" aria-labelledby="editorialTitle">
+      <div class="editorial-visual">
+        <img src="./assets/beauty.webp" alt="A woman closes her eyes beside a pale calla lily, evoking the intimacy of scent" loading="lazy" decoding="async" width="1057" height="1402">
+        <span class="editorial-photo-credit">AN INTIMATE STUDY / THE UNSPOKEN</span>
+      </div>
+      <div class="editorial-copy">
+        <span class="small-label reveal">04 / THE HUMAN ELEMENT</span>
+        <h2 class="display-title reveal" id="editorialTitle">A scent can<br>take you <em>back.</em></h2>
+        <div class="editorial-quote reveal"><span>“</span><p>To a place. To a person. To a version of yourself you thought you'd forgotten.</p></div>
+        <p class="editorial-sub reveal">Perhaps that is the quiet power of perfume: it says something before we find the words.</p>
+        <a class="underlined-link reveal" href="#collection">FIND YOUR SIGNATURE <span>↗</span></a>
+        <span class="editorial-number">VELORA / AN OLFACTORY FICTION</span>
+      </div>
+    </section>
+
+    <section class="collection paper-section" id="collection" aria-labelledby="collectionTitle">
+      <div class="section-index reveal"><span>05 / THE COLLECTION</span><span>YOUR NEXT IMPRESSION</span></div>
+      <div class="collection-heading reveal"><h2 class="display-title" id="collectionTitle">Three moods.<br><em>Which is yours?</em></h2><p>Explore the composition of each imagined creation. A fragrance is personal — the right one simply feels familiar.</p></div>
+      <div class="collection-grid">
+        <article class="fragrance-card fragrance-card-eclipse reveal" data-card="0">
+          <button class="fragrance-card-button" data-open="0" type="button" aria-label="Discover Éclipse fragrance">
+            <span class="card-top"><span>NO. 01 / ÉCLIPSE</span><span>EXTRAIT</span></span>
+            <span class="card-image"><img src="./assets/eclipse.webp" alt="Éclipse amber perfume bottle" loading="lazy" decoding="async"></span>
+            <span class="card-bottom"><strong>Éclipse</strong><small>WARM · AMBER · INTIMATE</small><span class="card-arrow">↗</span></span>
+          </button>
+        </article>
+        <article class="fragrance-card fragrance-card-solenne reveal" data-card="1">
+          <button class="fragrance-card-button" data-open="1" type="button" aria-label="Discover Solenne fragrance">
+            <span class="card-top"><span>NO. 02 / SOLENNE</span><span>EAU DE PARFUM</span></span>
+            <span class="card-image"><img src="./assets/solenne.webp" alt="Solenne ivory perfume bottle" loading="lazy" decoding="async"></span>
+            <span class="card-bottom"><strong>Solenne</strong><small>FLORAL · SOFT · LUMINOUS</small><span class="card-arrow">↗</span></span>
+          </button>
+        </article>
+        <article class="fragrance-card fragrance-card-vesper reveal" data-card="2">
+          <button class="fragrance-card-button" data-open="2" type="button" aria-label="Discover Vesper fragrance">
+            <span class="card-top"><span>NO. 03 / VESPER</span><span>PARFUM</span></span>
+            <span class="card-image"><img src="./assets/vesper.webp" alt="Vesper plum perfume bottle" loading="lazy" decoding="async"></span>
+            <span class="card-bottom"><strong>Vesper</strong><small>DARK · FLORAL · ENIGMATIC</small><span class="card-arrow">↗</span></span>
+          </button>
+        </article>
+      </div>
+      <p class="collection-disclaimer">A DIGITAL EXPERIMENT IN LUXURY STORYTELLING · THESE ARE FICTIONAL FRAGRANCES, NOT PRODUCTS FOR SALE.</p>
+    </section>
+
+    <section class="closing" aria-labelledby="closingTitle">
+      <div class="closing-orbit" aria-hidden="true"><span>V.</span></div>
+      <p class="small-label reveal">THE LASTING IMPRESSION</p>
+      <h2 class="reveal" id="closingTitle">Leave a little<br><em>mystery</em> behind.</h2>
+      <p class="reveal">A feeling can fade. A presence doesn't have to.</p>
+      <a class="closing-link reveal" href="#discover">EXPLORE YOUR PRESENCE <span>↗</span></a>
+    </section>
   </main>
-  <footer class="site-footer"><div class="footer-top"><p>AN IMAGINED MAISON.<br>A REAL EXPERIMENT IN MOTION.</p><a href="#top" class="back-to-top magnetic">BACK TO TOP <span>↑</span></a></div><div class="footer-brand" aria-label="Maison Velora">VELORA<span>.</span></div><div class="footer-bottom"><span>© 2026 MAISON VELORA · CONCEPT EXPERIENCE</span><span>DESIGNED TO BE FELT, NOT JUST SEEN.</span><span>PARIS / EVERYWHERE</span></div></footer>
-  <dialog class="product-dialog" id="productDialog" aria-labelledby="modalTitle"><button class="dialog-close" id="dialogClose" aria-label="Close fragrance details">×</button><div class="dialog-visual"><img src="./assets/eclipse.webp" id="modalProductImage" alt="Éclipse fragrance bottle"></div><div class="dialog-copy"><p class="gold-kicker">MAISON VELORA · OLFACTORY STUDIES</p><h2 id="modalTitle">Éclipse</h2><p id="modalDescription">Smoked amber. Velvet iris. The warmth of a moment that refuses to fade.</p><div class="dialog-note-list" id="modalNotes"></div><p class="dialog-disclaimer">A fictional fragrance concept created for this interactive design demonstration.</p><button class="dialog-return" id="dialogReturn">RETURN TO COLLECTION ↗</button></div></dialog>
+  <footer class="footer">
+    <div class="footer-top"><span>MAISON VELORA</span><a href="#top">BACK TO TOP ↑</a></div>
+    <div class="footer-wordmark" aria-label="Velora">VELORA<span>.</span></div>
+    <div class="footer-bottom"><span>© 2026 MAISON VELORA</span><span>AN IMAGINED MAISON — A REAL DESIGN EXPERIMENT</span><span>PARIS / EVERYWHERE</span></div>
+  </footer>
+
+  <dialog class="scent-dialog" id="scentDialog" aria-labelledby="dialogTitle">
+    <button type="button" class="dialog-close" id="dialogClose" aria-label="Close details">×</button>
+    <div class="dialog-visual"><div class="dialog-halo"></div><img id="dialogImage" src="./assets/eclipse.webp" alt="Éclipse fragrance bottle"></div>
+    <div class="dialog-content">
+      <p class="small-label" id="dialogKicker">NO. 01 — THE GOLDEN SHADOW</p>
+      <h2 id="dialogTitle">Éclipse</h2>
+      <p class="dialog-description" id="dialogDescription"></p>
+      <div class="dialog-notes"><div><span>01 / THE OPENING</span><strong id="dialogTop"></strong></div><div><span>02 / THE HEART</span><strong id="dialogHeart"></strong></div><div><span>03 / THE TRACE</span><strong id="dialogBase"></strong></div></div>
+      <div class="dialog-mood"><span>THE MOMENT</span><p id="dialogMoment"></p></div>
+      <p class="dialog-fiction">Concept fragrance · No products are available for purchase.</p>
+      <button type="button" class="dialog-done" id="dialogDone">BACK TO THE MAISON <span>↗</span></button>
+    </div>
+  </dialog>
 </body>
 </html>
