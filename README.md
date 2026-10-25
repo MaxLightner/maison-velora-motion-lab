@@ -41,8 +41,8 @@ git diff --check
 ### Accessibility
 
 - Semantic section headings, navigation, descriptive alternative text and visible focus.
-- An always-visible `MOTION ON/OFF` control respects the device's reduced-motion preference by default, but permits a deliberate override. A `REPLAY` button restarts the opening animation; the preference is persisted locally.
-- `prefers-reduced-motion` supported, with sticky visual journeys and pointer tilts disabled in that mode; no forced scroll or mouse-wheel hijacking.
+- Cinematic motion is enabled automatically on every visit, without a motion toggle or replay button; the system's reduced-motion preference does not suppress it.
+- All site typography uses a minimum defined font size of 13px on desktop and mobile. There is no forced scroll or mouse-wheel hijacking.
 - Scent selection responds to left/right arrow keys.
 - Native `<dialog>` supports focus containment, Escape to close, and backdrop dismissal.
 - Mobile navigation uses `inert` while closed.
