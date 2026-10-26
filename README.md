@@ -2,7 +2,7 @@
 
 A cinematic, responsive, static fragrance-showcase concept.
 
-**Live:** https://maxlightner.github.io/maison-velora-motion-lab/
+**Live:** https://maxlightner.github.io/velora/
 
 ## Experience
 
